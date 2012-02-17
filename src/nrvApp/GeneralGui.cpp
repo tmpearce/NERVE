@@ -3,7 +3,6 @@
 #include <QtCore\QTimer>
 #include <QtGui\QDockWidget>
 #include <QtGui\QAction>
-#include <QtGui\QFileDialog>
 #include <QtCore\QThread>
 
 
@@ -17,10 +16,12 @@ appExecutor(QApplication::instance()->thread()),
 qAppThread(QApplication::instance()->thread())
 {
 	nerveApp = app;
-	
 	ui.setupUi(this);
 	QTimer* timer = new QTimer(this);
 	timer->start(100);
+	
+	settingsEditor = new SettingsEditor(this);
+	settingsEditor->hide();
 
 	connect(timer,SIGNAL(timeout()),this,SLOT(update()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(quit()));
@@ -55,9 +56,7 @@ qAppThread(QApplication::instance()->thread())
 		//ui.menuFile->addAction(
 	}
 	connect(&loadRecentMapper,SIGNAL(mapped(QString)),this,SLOT(loadConfig(QString)));
-
-	settingsEditor = new SettingsEditor(this);
-	settingsEditor->hide();
+	
 	settingsEditor->setCurrentQSettingsPtr(appSettings);
 
 }
@@ -155,22 +154,14 @@ void GeneralGui::toggleSettings()
 }
 void GeneralGui::loadConfig(QString file)
 {
+	settingsEditor->loadSettings();
 }
 void GeneralGui::updateRecentFiles(QString file)
 {
 }
 void GeneralGui::saveConfigAs()
 {
-	QString path = appSettings->value("main/save_config_path", QDir::current().path() ).toString();
-	QFileDialog fd(this,"Save config as...",path,"ini files(*.ini)");
-	fd.setAcceptMode(QFileDialog::AcceptSave);
-	if(fd.exec())
-	{
-		QDir dir = fd.directory();
-		appSettings->setValue("main/save_config_path",dir.absolutePath());
-		QStringList s = fd.selectedFiles();
-		printf("%s **/** %s\n",dir.absolutePath().toAscii().constData(),s.first().toAscii().constData());
-	}
+	settingsEditor->saveSettings();
 }
 void GeneralGui::addPluginUI(QString id, QString title, QWidget* ui)
 {
