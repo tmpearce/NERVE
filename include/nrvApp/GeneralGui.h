@@ -8,27 +8,24 @@
 #pragma once
 
 
-#include "nrvApp\_UIC_GeneralGui.h"
-#include "nrvApp/_UIC_SettingsEditor.h"
-#include <QtGui\QActionGroup>
-#include <QtGui\QMainWindow>
-#include <QtGui\QTabWidget>
-#include <QtGui\QDockWidget>
-#include <QtCore\QSet>
-#include <QtGui\QAction>
-#include <QtCore\QSignalMapper>
-#include <QtGui\QContextMenuEvent>
+#include "nrvApp/_UIC_GeneralGui.h"
+#include "nrvApp/SettingsEditor.h"
+#include <QtGui/QActionGroup>
+#include <QtGui/QMainWindow>
+#include <QtGui/QTabWidget>
+#include <QtGui/QDockWidget>
+#include <QtCore/QSet>
+#include <QtGui/QAction>
+#include <QtCore/QSignalMapper>
+#include <QtGui/QContextMenuEvent>
 #include <QtCore/QThread>
-#include <QtGui\QDialog>
-#include "nrv\EventObserver.h"
-#include "nrvApp\NerveApplication.h"
+#include <QtGui/QDialog>
+#include "nrv/EventObserver.h"
+#include "nrvApp/NerveApplication.h"
 #include "nrvToolbox/Pause.h"
 #include "nrv/MessageQueue.h"
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QCheckBox>
-#include <QtCore/QSettings>
+
+
 
 //class CentralWidget;
 class UIDock;
@@ -142,157 +139,7 @@ public slots:
 	void quit();
 };
 
-class SettingsEditor : public QDialog
-{
-	Q_OBJECT
-public:
-	class Checkbox : public QWidget
-	{
-	public:
-		Checkbox(const QString& text_, QWidget* parent=0):text(text_),QWidget(parent)
-		{
-			QHBoxLayout* layout = new QHBoxLayout(this);
-			qcheckbox = new QCheckBox(this);
-			QLabel* label = new QLabel(text,this);
-			label->setWordWrap(true);			
-			layout->addWidget(qcheckbox);
-			layout->addWidget(label);
-		}
-		~Checkbox(){}
-		bool isChecked(){return qcheckbox->isChecked();}
-		QString text;
-		QCheckBox* qcheckbox;
-	};
-	class DynamicPluginLayout : public QVBoxLayout
-	{
-	public:
-		DynamicPluginLayout(QWidget* parent = 0):QVBoxLayout(0){}
-		void clear()
-		{
-			while(count()>0)
-			{
-				QLayoutItem *item = takeAt(0);
-				
-				delete item->widget();
-				delete item;
-			}
-		}
-		void setup(QVector<SettingsEditor::Checkbox*> c)
-		{
-			clear();
-			for(int i=0; i<c.size();++i)
-			{
-				addWidget(c.at(i),0,Qt::AlignLeft);
-			}
-			addStretch(0);
-		}
-	};
-	SettingsEditor(QWidget* parent)
-	{
-		ui.setupUi(this);
 
-		connect(&signalMapper,SIGNAL(mapped(int)),ui.stackedWidget,SLOT(setCurrentIndex(int)));
-		signalMapper.setMapping(ui.buttonStartup,1);
-		connect(ui.buttonStartup,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonFavorites,2);
-		connect(ui.buttonFavorites,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonMain_GUI,3);
-		connect(ui.buttonMain_GUI,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn,0);
-		connect(ui.buttonReturn,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn_2,0);
-		connect(ui.buttonReturn_2,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn_3,0);
-		connect(ui.buttonReturn_3,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		
-		applyMapper.setMapping(ui.buttonApply,1);
-		connect(ui.buttonApply,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		applyMapper.setMapping(ui.buttonApply_2,2);
-		connect(ui.buttonApply_2,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		applyMapper.setMapping(ui.buttonApply_3,3);
-		connect(ui.buttonApply_3,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		connect(&applyMapper,SIGNAL(mapped(int)),this,SLOT(applySettings(int)));
-
-		connect(ui.buttonDone,SIGNAL(clicked()),this,SLOT(close()));
-		
-		startupWidget = new QWidget(this);
-		startupLayout = new DynamicPluginLayout(startupWidget);
-		startupWidget->setLayout(startupLayout);
-		startupWidget->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-		ui.startupScrollArea->setWidget(startupWidget);
-		
-
-		favoritesWidget = new QWidget(this);
-		favoritesLayout = new DynamicPluginLayout(favoritesWidget);
-		favoritesWidget->setLayout(favoritesLayout);
-		favoritesWidget->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-		ui.favoritesScrollArea->setWidget(favoritesWidget);
-		
-	}
-	void setCurrentQSettingsPtr(QSettings* p){settings=p;}
-	void setPluginTypes(QStringList plugins)
-	{
-		startupCheckboxes.clear();
-		favoritesCheckboxes.clear();
-		for(int i=0; i<plugins.size();++i)
-		{
-			Checkbox* item = new Checkbox(plugins.at(i),0);
-			startupCheckboxes.push_back(item);
-
-			item = new Checkbox(plugins.at(i),0);
-			favoritesCheckboxes.push_back(item);
-		}
-		startupLayout->setup(startupCheckboxes);
-		favoritesLayout->setup(favoritesCheckboxes);
-	}
-	void refreshSettings(){}
-public slots:
-	void applySettings(int page)
-	{
-		printf("apply %i clicked\n",page);
-		switch(page)
-		{
-		case 1: applyPageSettings1(); break;
-		case 2: applyPageSettings2(); break;
-		case 3: applyPageSettings3(); break;
-		}
-	}
-private:
-	QSettings* settings;
-	QSignalMapper signalMapper;
-	QSignalMapper applyMapper;
-	Ui::SettingsEditor ui;
-	QWidget* startupWidget;
-	QWidget* favoritesWidget;
-	DynamicPluginLayout* startupLayout;
-	DynamicPluginLayout* favoritesLayout;
-	QVector<Checkbox*> favoritesCheckboxes;
-	QVector<Checkbox*> startupCheckboxes;
-
-	QVector<QString> settingsStrings;
-	
-	void applyPageSettings1(){}
-	void applyPageSettings2()
-	{
-		QVector<QString> checkedItems;
-		for(int i=0;i<favoritesCheckboxes.size();++i)
-		{
-			Checkbox* cb = favoritesCheckboxes.at(i);
-			if(cb && cb->isChecked()) 
-			{
-				checkedItems.push_back(cb->text);
-				printf("checked item: %s\n",cb->text.toAscii().constData());
-			}
-		}
-	}
-	void applyPageSettings3(){}
-	void loadPageSettings1(QString str){}
-	void loadPageSettings2(QString str){}
-	void loadPageSettings3(QString str){}
-	void loadSettings()
-	{
-	}
-};
 class UIDock : public QDockWidget
 {
 	Q_OBJECT
