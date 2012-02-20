@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SettingsEditor.ui'
 **
-** Created: Wed Dec 14 17:20:45 2011
+** Created: Mon Feb 20 16:18:47 2012
 **      by: Qt User Interface Compiler version 4.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,32 +39,35 @@ public:
     QLabel *label_3;
     QScrollArea *startupScrollArea;
     QWidget *scrollAreaWidgetContents;
-    QPushButton *buttonApply;
     QPushButton *buttonReturn;
+    QLabel *Status_Text;
+    QPushButton *buttonApply;
     QWidget *page_3;
     QPushButton *buttonReturn_2;
     QPushButton *buttonApply_2;
     QLabel *label_4;
     QScrollArea *favoritesScrollArea;
     QWidget *scrollAreaWidgetContents_2;
+    QLabel *label_2;
     QWidget *page_4;
     QPushButton *buttonReturn_3;
     QPushButton *buttonApply_3;
     QLabel *label;
+    QLabel *label_5;
 
     void setupUi(QDialog *SettingsEditor)
     {
         if (SettingsEditor->objectName().isEmpty())
             SettingsEditor->setObjectName(QString::fromUtf8("SettingsEditor"));
-        SettingsEditor->resize(222, 391);
+        SettingsEditor->resize(324, 391);
         stackedWidget = new QStackedWidget(SettingsEditor);
         stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
-        stackedWidget->setGeometry(QRect(10, 0, 201, 381));
+        stackedWidget->setGeometry(QRect(10, 0, 311, 391));
         page = new QWidget();
         page->setObjectName(QString::fromUtf8("page"));
         frame = new QFrame(page);
         frame->setObjectName(QString::fromUtf8("frame"));
-        frame->setGeometry(QRect(30, 50, 120, 281));
+        frame->setGeometry(QRect(10, 20, 120, 281));
         frame->setFrameShape(QFrame::StyledPanel);
         frame->setFrameShadow(QFrame::Raised);
         frame->setLineWidth(4);
@@ -79,7 +82,7 @@ public:
         buttonMain_GUI->setGeometry(QRect(20, 70, 75, 23));
         buttonDone = new QPushButton(page);
         buttonDone->setObjectName(QString::fromUtf8("buttonDone"));
-        buttonDone->setGeometry(QRect(120, 356, 75, 23));
+        buttonDone->setGeometry(QRect(230, 360, 75, 23));
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
         page_2->setObjectName(QString::fromUtf8("page_2"));
@@ -88,55 +91,65 @@ public:
         label_3->setGeometry(QRect(13, 10, 61, 16));
         startupScrollArea = new QScrollArea(page_2);
         startupScrollArea->setObjectName(QString::fromUtf8("startupScrollArea"));
-        startupScrollArea->setGeometry(QRect(13, 30, 181, 321));
+        startupScrollArea->setGeometry(QRect(13, 30, 291, 311));
         startupScrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 179, 319));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 289, 309));
         startupScrollArea->setWidget(scrollAreaWidgetContents);
-        buttonApply = new QPushButton(page_2);
-        buttonApply->setObjectName(QString::fromUtf8("buttonApply"));
-        buttonApply->setGeometry(QRect(40, 356, 75, 23));
         buttonReturn = new QPushButton(page_2);
         buttonReturn->setObjectName(QString::fromUtf8("buttonReturn"));
-        buttonReturn->setGeometry(QRect(120, 356, 75, 23));
+        buttonReturn->setGeometry(QRect(230, 360, 75, 23));
+        Status_Text = new QLabel(page_2);
+        Status_Text->setObjectName(QString::fromUtf8("Status_Text"));
+        Status_Text->setGeometry(QRect(150, 340, 151, 20));
+        Status_Text->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        buttonApply = new QPushButton(page_2);
+        buttonApply->setObjectName(QString::fromUtf8("buttonApply"));
+        buttonApply->setGeometry(QRect(150, 360, 75, 23));
         stackedWidget->addWidget(page_2);
         page_3 = new QWidget();
         page_3->setObjectName(QString::fromUtf8("page_3"));
         buttonReturn_2 = new QPushButton(page_3);
         buttonReturn_2->setObjectName(QString::fromUtf8("buttonReturn_2"));
-        buttonReturn_2->setGeometry(QRect(120, 356, 75, 23));
+        buttonReturn_2->setGeometry(QRect(230, 360, 75, 23));
         buttonApply_2 = new QPushButton(page_3);
         buttonApply_2->setObjectName(QString::fromUtf8("buttonApply_2"));
-        buttonApply_2->setGeometry(QRect(40, 356, 75, 23));
+        buttonApply_2->setGeometry(QRect(150, 360, 75, 23));
         label_4 = new QLabel(page_3);
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setGeometry(QRect(13, 10, 61, 16));
         favoritesScrollArea = new QScrollArea(page_3);
         favoritesScrollArea->setObjectName(QString::fromUtf8("favoritesScrollArea"));
-        favoritesScrollArea->setGeometry(QRect(13, 30, 181, 321));
+        favoritesScrollArea->setGeometry(QRect(13, 30, 291, 311));
         favoritesScrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents_2 = new QWidget();
         scrollAreaWidgetContents_2->setObjectName(QString::fromUtf8("scrollAreaWidgetContents_2"));
-        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 179, 319));
+        scrollAreaWidgetContents_2->setGeometry(QRect(0, 0, 289, 309));
         favoritesScrollArea->setWidget(scrollAreaWidgetContents_2);
+        label_2 = new QLabel(page_3);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setGeometry(QRect(90, 10, 171, 16));
         stackedWidget->addWidget(page_3);
         page_4 = new QWidget();
         page_4->setObjectName(QString::fromUtf8("page_4"));
         buttonReturn_3 = new QPushButton(page_4);
         buttonReturn_3->setObjectName(QString::fromUtf8("buttonReturn_3"));
-        buttonReturn_3->setGeometry(QRect(120, 356, 75, 23));
+        buttonReturn_3->setGeometry(QRect(230, 360, 75, 23));
         buttonApply_3 = new QPushButton(page_4);
         buttonApply_3->setObjectName(QString::fromUtf8("buttonApply_3"));
-        buttonApply_3->setGeometry(QRect(40, 356, 75, 23));
+        buttonApply_3->setGeometry(QRect(150, 360, 75, 23));
         label = new QLabel(page_4);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(13, 10, 101, 16));
+        label_5 = new QLabel(page_4);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+        label_5->setGeometry(QRect(50, 60, 171, 16));
         stackedWidget->addWidget(page_4);
 
         retranslateUi(SettingsEditor);
 
-        stackedWidget->setCurrentIndex(0);
+        stackedWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(SettingsEditor);
@@ -150,14 +163,17 @@ public:
         buttonMain_GUI->setText(QApplication::translate("SettingsEditor", "Main GUI", 0, QApplication::UnicodeUTF8));
         buttonDone->setText(QApplication::translate("SettingsEditor", "Done", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("SettingsEditor", "On startup:", 0, QApplication::UnicodeUTF8));
-        buttonApply->setText(QApplication::translate("SettingsEditor", "Apply", 0, QApplication::UnicodeUTF8));
         buttonReturn->setText(QApplication::translate("SettingsEditor", "Return", 0, QApplication::UnicodeUTF8));
+        Status_Text->setText(QApplication::translate("SettingsEditor", "TextLabel", 0, QApplication::UnicodeUTF8));
+        buttonApply->setText(QApplication::translate("SettingsEditor", "Apply", 0, QApplication::UnicodeUTF8));
         buttonReturn_2->setText(QApplication::translate("SettingsEditor", "Return", 0, QApplication::UnicodeUTF8));
         buttonApply_2->setText(QApplication::translate("SettingsEditor", "Apply", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("SettingsEditor", "Favorites:", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("SettingsEditor", "Reserved for future implentation", 0, QApplication::UnicodeUTF8));
         buttonReturn_3->setText(QApplication::translate("SettingsEditor", "Return", 0, QApplication::UnicodeUTF8));
         buttonApply_3->setText(QApplication::translate("SettingsEditor", "Apply", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("SettingsEditor", "Main GUI behavior", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("SettingsEditor", "Reserved for future implentation", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

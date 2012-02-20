@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'GeneralGui.h'
 **
-** Created: Fri Feb 17 11:27:08 2012
+** Created: Mon Feb 20 16:18:47 2012
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.1)
 **
 ** WARNING! All changes made in this file will be lost!

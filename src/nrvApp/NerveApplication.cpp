@@ -42,7 +42,7 @@ void NerveApplication::launch()
 
 	pluginRegistry.discoverPlugins();
 	gui->refreshPluginList();
-
+	gui->init();
 	gui->move(300,50);
 	gui->setVisible(true);
 

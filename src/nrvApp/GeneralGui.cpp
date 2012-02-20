@@ -20,7 +20,8 @@ qAppThread(QApplication::instance()->thread())
 	QTimer* timer = new QTimer(this);
 	timer->start(100);
 	
-	settingsEditor = new SettingsEditor(this);
+	appSettings = new QSettings("Moran Lab","NERVE");
+	settingsEditor = new SettingsEditor(appSettings, this);
 	settingsEditor->hide();
 
 	connect(timer,SIGNAL(timeout()),this,SLOT(update()));
@@ -45,7 +46,7 @@ qAppThread(QApplication::instance()->thread())
 	nerveApp->addEventObserver("UIAvailable", UIAvailable);
 	nerveApp->addEventObserver("UIRemoved", UIRemoved);
 
-	appSettings = new QSettings("Moran Lab","NERVE");
+	
 	QString s;
 	s = appSettings->value("main/recent/1").toString();
 	if(!s.isEmpty())
@@ -56,13 +57,15 @@ qAppThread(QApplication::instance()->thread())
 		//ui.menuFile->addAction(
 	}
 	connect(&loadRecentMapper,SIGNAL(mapped(QString)),this,SLOT(loadConfig(QString)));
-	
-	settingsEditor->setCurrentQSettingsPtr(appSettings);
-
 }
-void GeneralGui::init()
+void GeneralGui::init()//called after plugins are detected
 {
-	settingsEditor->refreshSettings();
+	settingsEditor->loadSettings();
+	QString p = settingsEditor->getStartupPlugin();
+	if(!p.isEmpty())
+	{
+		createPlugin(p);
+	}
 }
 /*******Slot definitions for GUI actions***********/
 void GeneralGui::quit()
@@ -142,7 +145,8 @@ void GeneralGui::refreshPluginList()
 		pluginMenu->addAction(pluginAction);
 	}
 	settingsEditor->setPluginTypes(qstringlist);
-	settingsEditor->refreshSettings();
+	
+	//settingsEditor->refreshSettings();
 }
 void GeneralGui::toggleSettings()
 {
@@ -161,7 +165,7 @@ void GeneralGui::updateRecentFiles(QString file)
 }
 void GeneralGui::saveConfigAs()
 {
-	settingsEditor->saveSettings();
+	settingsEditor->saveSettingsAs();
 }
 void GeneralGui::addPluginUI(QString id, QString title, QWidget* ui)
 {

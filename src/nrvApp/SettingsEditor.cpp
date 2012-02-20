@@ -1,8 +1,10 @@
 #include "nrvApp/SettingsEditor.h"
 
-SettingsEditor::SettingsEditor(QWidget* parent)
+SettingsEditor::SettingsEditor(QSettings* s, QWidget* parent)
 	{
+		settings=s;
 		ui.setupUi(this);
+		ui.stackedWidget->setCurrentIndex(0);
 
 		connect(&signalMapper,SIGNAL(mapped(int)),ui.stackedWidget,SLOT(setCurrentIndex(int)));
 		signalMapper.setMapping(ui.buttonStartup,1);
@@ -17,30 +19,19 @@ SettingsEditor::SettingsEditor(QWidget* parent)
 		connect(ui.buttonReturn_2,SIGNAL(clicked()),&signalMapper,SLOT(map()));
 		signalMapper.setMapping(ui.buttonReturn_3,0);
 		connect(ui.buttonReturn_3,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		
-		/*applyMapper.setMapping(ui.buttonApply,1);
-		connect(ui.buttonApply,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		applyMapper.setMapping(ui.buttonApply_2,2);
-		connect(ui.buttonApply_2,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		applyMapper.setMapping(ui.buttonApply_3,3);
-		connect(ui.buttonApply_3,SIGNAL(clicked()),&applyMapper,SLOT(map()));
-		connect(&applyMapper,SIGNAL(mapped(int)),this,SLOT(applySettings(int)));*/
 
 		connect(ui.buttonDone,SIGNAL(clicked()),this,SLOT(close()));
-		
-		//startupWidget = new QWidget(this);
-		//startupLayout = new DynamicPluginLayout(startupWidget);
-		//startupWidget->setLayout(startupLayout);
-		//startupWidget->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-		//ui.startupScrollArea->setWidget(startupWidget);
-		
-
-		favoritesWidget = new QWidget(this);
-		favoritesLayout = new DynamicPluginLayout(favoritesWidget);
-		favoritesWidget->setLayout(favoritesLayout);
-		favoritesWidget->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-		ui.favoritesScrollArea->setWidget(favoritesWidget);
-		
+				
 		startupPage = new StartupPage(this);
+		startupPage->setGroupString("Startup");
+		startupPage->setDefaultQSettings(settings);
 		startupPage->setScrollArea(ui.startupScrollArea);
+		startupPage->setStatusText(ui.Status_Text);
+		startupPage->setApplyButtonPtr(ui.buttonApply);
 	}
+QString SettingsEditor::getStartupPlugin()
+{
+	StartupPage* s = dynamic_cast<StartupPage*>(startupPage);
+	if(s)	return s->getCurrentSelection();
+	else return QString();
+}

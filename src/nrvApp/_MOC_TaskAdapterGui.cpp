@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'TaskAdapterGui.h'
 **
-** Created: Mon Dec 19 11:21:55 2011
+** Created: Mon Feb 20 16:28:02 2012
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.1)
 **
 ** WARNING! All changes made in this file will be lost!

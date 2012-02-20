@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'SettingsEditor.h'
 **
-** Created: Fri Feb 17 12:20:48 2012
+** Created: Mon Feb 20 16:18:47 2012
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.1)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -143,7 +143,7 @@ static const uint qt_meta_data_StartupPage[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       1,   14, // methods
+       2,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -152,12 +152,14 @@ static const uint qt_meta_data_StartupPage[] = {
 
  // slots: signature, parameters, type, tag, flags
       13,   12,   12,   12, 0x0a,
+      25,   21,   12,   12, 0x0a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_StartupPage[] = {
-    "StartupPage\0\0apply()\0"
+    "StartupPage\0\0apply()\0str\0"
+    "selectionChanged(QString)\0"
 };
 
 const QMetaObject StartupPage::staticMetaObject = {
@@ -190,9 +192,10 @@ int StartupPage::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
         case 0: apply(); break;
+        case 1: selectionChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         default: ;
         }
-        _id -= 1;
+        _id -= 2;
     }
     return _id;
 }
