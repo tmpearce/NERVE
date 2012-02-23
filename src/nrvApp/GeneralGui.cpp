@@ -150,11 +150,8 @@ void GeneralGui::refreshPluginList()
 }
 void GeneralGui::toggleSettings()
 {
-	printf("toggleSettings\n");
 	if(settingsEditor->isVisible()) settingsEditor->hide();
 	else                            settingsEditor->show();
-	/*if(ui.centralwidget->isVisible()) ui.centralwidget->hide();
-	else ui.centralwidget->show();*/
 }
 void GeneralGui::loadConfig(QString file)
 {

@@ -1,7 +1,7 @@
 #define BUILD_NERVEPLUGIN_LIBRARY
-#include "nrvApp\NerveAPI.h"
-#include "nrvApp\PluginHandler.h"
-#include "nrvApp\PluginRegistry.h"
+#include "nrvApp/NerveAPI.h"
+#include "nrvApp/PluginHandler.h"
+#include "nrvApp/PluginRegistry.h"
 
 void NerveAPI::registerWithApplication(NervePluginFactory* f, PluginRegistry* r)
 {

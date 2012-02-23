@@ -1,10 +1,8 @@
-#define BUILD_NERVEAPPLICATION_LIBRARY
-
-#include "nrvApp\NerveApplication.h"
+#include "nrvApp/NerveApplication.h"
 #include "windows.h"
 #include <iostream>
-#include "nrvApp\GeneralGui.h"
-#include <QtCore\QObject>
+#include "nrvApp/GeneralGui.h"
+#include <QtCore/QObject>
 
 class QDialog;
 
