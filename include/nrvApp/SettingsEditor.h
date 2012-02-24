@@ -1,5 +1,5 @@
 #pragma once
-#include "nrvApp/_UIC_SettingsEditor.h"
+#include "ui_SettingsEditor.h"
 #include <QtCore/QSettings>
 #include <QtGui/QFileDialog>
 #include <QtCore/QFile>

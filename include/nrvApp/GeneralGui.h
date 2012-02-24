@@ -8,7 +8,7 @@
 #pragma once
 
 
-#include "nrvApp/_UIC_GeneralGui.h"
+#include "ui_GeneralGui.h"
 #include "nrvApp/SettingsEditor.h"
 #include <QtGui/QActionGroup>
 #include <QtGui/QMainWindow>
