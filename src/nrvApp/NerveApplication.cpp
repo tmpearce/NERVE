@@ -1,10 +1,8 @@
-#define BUILD_NERVEAPPLICATION_LIBRARY
-
-#include "nrvApp\NerveApplication.h"
+#include "nrvApp/NerveApplication.h"
 #include "windows.h"
 #include <iostream>
-#include "nrvApp\GeneralGui.h"
-#include <QtCore\QObject>
+#include "nrvApp/GeneralGui.h"
+#include <QtCore/QObject>
 
 class QDialog;
 
@@ -42,7 +40,7 @@ void NerveApplication::launch()
 
 	pluginRegistry.discoverPlugins();
 	gui->refreshPluginList();
-
+	gui->init();
 	gui->move(300,50);
 	gui->setVisible(true);
 

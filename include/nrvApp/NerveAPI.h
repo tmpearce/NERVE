@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef BUILD_NERVEPLUGIN_LIBRARY
+#ifdef BUILD_NERVEAPPLICATION_LIBRARY
 #define NERVEPLUGIN __declspec(dllexport)
 #else
 #define NERVEPLUGIN __declspec(dllimport)

@@ -1,5 +1,3 @@
-#define BUILD_NERVETASK_LEGACY_LIBRARY
-
 #include "nrvApp\TaskRegistry.h"
 #include "nrvExe\Task.h"
 #include "nrvApp\TaskAdapter.h"
