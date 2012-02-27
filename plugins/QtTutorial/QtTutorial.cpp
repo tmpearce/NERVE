@@ -19,7 +19,7 @@ public:
 	{
 		mpAPI = n;
 		printf("pointer copied\n");
-		mpAPI->requestCallbackFromMainApplicationThread(CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
 	}
 	void callbackFromMainApplicationThread(int call_id)
 	{

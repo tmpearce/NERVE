@@ -49,7 +49,7 @@ public:
 
 	//Threading
 	void							useThreadedMode();
-	void							requestCallbackFromMainApplicationThread(int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status);
+	void							callPluginFromMainThread(NervePluginBase* p, int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status);
 
 	//Plugins
 	StringList						getLoadedPluginIDs();

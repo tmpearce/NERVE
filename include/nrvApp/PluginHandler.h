@@ -23,7 +23,7 @@ protected:
 	void setupAndRun();
 	~PluginHandler();
 
-	void requestCallbackFromMainApplicationThread(int call_id, NerveAPI::CALLBACK_REQUESTS_BLOCKING_STATUS status);
+	void callPluginFromMainThread(NervePluginBase* p, int call_id, NerveAPI::CALLBACK_REQUESTS_BLOCKING_STATUS status);
 	
 	std::vector<std::string>		getLoadedPluginIDs();
 	std::vector<std::string>		getAvailableFactoryIDs();

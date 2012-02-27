@@ -13,7 +13,7 @@ public:
 		ui.val1->setValidator(validator);
 		ui.val2->setValidator(validator);
 		connect(ui.val1,SIGNAL(textChanged(const QString&)),this,SLOT(val1changed(const QString&)));
-		connect(ui.val2,SIGNAL(textChanged(const QString&)),this,SLOT(val1changed(const QString&)));
+		connect(ui.val2,SIGNAL(textChanged(const QString&)),this,SLOT(val2changed(const QString&)));
 	}
 public slots:
 	void val1changed(const QString& s)
