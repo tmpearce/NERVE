@@ -103,15 +103,15 @@ void PluginHandler::useThreadedMode()
 		myThread->start();
 	}
 }
-void PluginHandler::requestCallbackFromMainApplicationThread(int call_id, NerveAPI::CALLBACK_REQUESTS_BLOCKING_STATUS status)
+void PluginHandler::callPluginFromMainThread(NervePluginBase* p, int call_id, NerveAPI::CALLBACK_REQUESTS_BLOCKING_STATUS status)
 {
 	switch(status)
 	{
 	case NerveAPI::CALLBACK_REQUESTS_BLOCKING:
-		nerveApp->postEventToQApplication(SelfDeletingOneShotCallback::create(call_id,myPlugin),true);
+		nerveApp->postEventToQApplication(SelfDeletingOneShotCallback::create(call_id,p),true);
 		break;
-	case NerveAPI::CALLBACK_REQUESTS_NONBLOCKING://warning: if myPlugin is destroyed before the call is executed, it will crash.
-		nerveApp->postEventToQApplication(SelfDeletingOneShotCallback::create(call_id,myPlugin),false);
+	case NerveAPI::CALLBACK_REQUESTS_NONBLOCKING://warning: if the plugin is destroyed before the call is executed, it will crash.
+		nerveApp->postEventToQApplication(SelfDeletingOneShotCallback::create(call_id,p),false);
 		break;
 	}
 }

@@ -248,7 +248,7 @@ public:
 	{
 		launchStatus = !launchStatus;//toggle status
 		if(launchStatus==true)//newly launched
-			pAPI->requestCallbackFromMainApplicationThread(1,NerveAPI::CALLBACK_REQUESTS_BLOCKING);//case 1: launchTask();
+			pAPI->callPluginFromMainThread(this,1,NerveAPI::CALLBACK_REQUESTS_BLOCKING);//case 1: launchTask();
 		else//newly canceled
 		{
 			cancelTask();

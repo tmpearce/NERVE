@@ -1,5 +1,5 @@
 #pragma once
-#include "nrvApp\_UIC_TaskAdapterGui.h"
+#include "ui_TaskAdapterGui.h"
 #include "nrvToolbox/RebroadcastQtAdapter.h"
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenuBar>

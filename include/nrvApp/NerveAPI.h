@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef BUILD_NERVEPLUGIN_LIBRARY
+#ifdef BUILD_NERVEAPPLICATION_LIBRARY
 #define NERVEPLUGIN __declspec(dllexport)
 #else
 #define NERVEPLUGIN __declspec(dllimport)
@@ -49,7 +49,7 @@ public:
 
 	//Threading
 	void							useThreadedMode();
-	void							requestCallbackFromMainApplicationThread(int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status);
+	void							callPluginFromMainThread(NervePluginBase* p, int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status);
 
 	//Plugins
 	StringList						getLoadedPluginIDs();

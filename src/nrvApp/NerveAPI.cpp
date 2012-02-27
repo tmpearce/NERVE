@@ -1,7 +1,7 @@
 #define BUILD_NERVEPLUGIN_LIBRARY
-#include "nrvApp\NerveAPI.h"
-#include "nrvApp\PluginHandler.h"
-#include "nrvApp\PluginRegistry.h"
+#include "nrvApp/NerveAPI.h"
+#include "nrvApp/PluginHandler.h"
+#include "nrvApp/PluginRegistry.h"
 
 void NerveAPI::registerWithApplication(NervePluginFactory* f, PluginRegistry* r)
 {
@@ -11,9 +11,9 @@ void NerveAPI::useThreadedMode()
 {
 	_d->useThreadedMode();
 }
-void NerveAPI::requestCallbackFromMainApplicationThread(int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status)
+void NerveAPI::callPluginFromMainThread(NervePluginBase* p, int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status)
 {
-	_d->requestCallbackFromMainApplicationThread(call_id,status);
+	_d->callPluginFromMainThread(p, call_id,status);
 }
 
 std::vector<std::string> NerveAPI::getLoadedPluginIDs(){return _d->getLoadedPluginIDs();}

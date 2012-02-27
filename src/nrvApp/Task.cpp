@@ -1,8 +1,5 @@
 /* Definitions file for the abstract base class Task */
-#define BUILD_NERVETASK_LEGACY_LIBRARY
-#include "nrvExe\Task.h"
-//#include "nrvExe\SettingsGui.h"
-//#include "GMutex.h"
+#include "nrvExe/Task.h"
 class NoSettingsGui;
 
 Task::Task()

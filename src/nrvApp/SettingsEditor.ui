@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>222</width>
+    <width>324</width>
     <height>391</height>
    </rect>
   </property>
@@ -18,19 +18,19 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>201</width>
-     <height>381</height>
+     <width>311</width>
+     <height>391</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="page">
     <widget class="QFrame" name="frame">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>50</y>
+       <x>10</x>
+       <y>20</y>
        <width>120</width>
        <height>281</height>
       </rect>
@@ -87,8 +87,8 @@
     <widget class="QPushButton" name="buttonDone">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>356</y>
+       <x>230</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -117,8 +117,8 @@
       <rect>
        <x>13</x>
        <y>30</y>
-       <width>181</width>
-       <height>321</height>
+       <width>291</width>
+       <height>311</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -129,30 +129,17 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>179</width>
-        <height>319</height>
+        <width>289</width>
+        <height>309</height>
        </rect>
       </property>
      </widget>
     </widget>
-    <widget class="QPushButton" name="buttonApply">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>356</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Apply</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="buttonReturn">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>356</y>
+       <x>230</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -161,13 +148,42 @@
       <string>Return</string>
      </property>
     </widget>
+    <widget class="QLabel" name="Status_Text">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>340</y>
+       <width>151</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="buttonApply">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>360</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_3">
     <widget class="QPushButton" name="buttonReturn_2">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>356</y>
+       <x>230</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -179,8 +195,8 @@
     <widget class="QPushButton" name="buttonApply_2">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>356</y>
+       <x>150</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -207,8 +223,8 @@
       <rect>
        <x>13</x>
        <y>30</y>
-       <width>181</width>
-       <height>321</height>
+       <width>291</width>
+       <height>311</height>
       </rect>
      </property>
      <property name="widgetResizable">
@@ -219,19 +235,32 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>179</width>
-        <height>319</height>
+        <width>289</width>
+        <height>309</height>
        </rect>
       </property>
      </widget>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>10</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reserved for future implentation</string>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="page_4">
     <widget class="QPushButton" name="buttonReturn_3">
      <property name="geometry">
       <rect>
-       <x>120</x>
-       <y>356</y>
+       <x>230</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -243,8 +272,8 @@
     <widget class="QPushButton" name="buttonApply_3">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>356</y>
+       <x>150</x>
+       <y>360</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -264,6 +293,19 @@
      </property>
      <property name="text">
       <string>Main GUI behavior</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>60</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reserved for future implentation</string>
      </property>
     </widget>
    </widget>
