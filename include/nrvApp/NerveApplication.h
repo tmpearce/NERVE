@@ -48,10 +48,8 @@ public:
 };
 class PluginCreator : public QApplicationExecutor::Functionoid{
 public:
-	PluginCreator(PluginHandler*& hd, NerveApplication& app, NervePluginFactory& factory):a(app),f(factory),h(hd){}
+	PluginCreator(PluginHandler*& hd):h(hd){}
 	void operator()();
-	NerveApplication& a;
-	NervePluginFactory& f;
 	PluginHandler*& h;
 };
 class NerveApplication
@@ -84,22 +82,17 @@ public:
 	{
 		NervePluginFactory* factory = pluginRegistry.getFactory(factory_id);
 		if(factory==NULL) return std::string("Error creating plugin");
-		PluginHandler* handler=0;
-		PluginCreator pc(handler,*this,*factory);
-		postEventToQApplication(&pc,true);
-		if(handler==NULL) return std::string("Error creating plugin");
+		PluginHandler* handler=new PluginHandler(*this,*factory);
+		//PluginCreator pc(handler);
+		//postEventToQApplication(&pc,true);
+		//if(handler==NULL) return std::string("Error creating plugin");
+		if(creator==0){owner=PLUGIN_OWNED_BY_APPLICATION;}//should never happen but if it does make sure plugin can be cancelled from the application
+		if(owner==PLUGIN_OWNED_BY_PLUGIN) handler->setOwner(creator);
 		std::string id = pluginManager.addPluginHandler(*handler,factory_id);
 
-		if(creator==0){owner=PLUGIN_OWNED_BY_APPLICATION;}//should never happen but if it does make sure plugin can be cancelled from the application
-		switch(owner)
-		{
-		case PLUGIN_OWNED_BY_APPLICATION:
+		if(owner== PLUGIN_OWNED_BY_APPLICATION)
 			PluginAvailable.broadcast(id);
-			break;
-		case PLUGIN_OWNED_BY_PLUGIN:
-			handler->setOwner(creator);
-			break;
-		}
+			
 		
 		return id;
 	}

@@ -1,12 +1,7 @@
-//include files for making a plugin
-#include "nrv/PluginDeveloperTools.h"
-#include "nrvApp/NerveAPI.h"
-#include "nrvApp/NervePluginFactory.h"
+#pragma once
 #include "nrvApp/NervePluginBase.h"
-
-//files from this project
-#include "GuiHeader.h"
-M_MAKE_PLUGIN(TutorialPluginFactory)
+#include "nrvApp/NerveAPI.h"
+#include "Gui.h"
 
 class TutorialPlugin : public NervePluginBase
 {
@@ -33,31 +28,31 @@ public:
 		case DESTROY_GUI: destroyGui(); break;
 		}
 	}
+	void create(std::string pname)
+	{
+		mpAPI->createPlugin(pname);
+	}
+	void refreshAvailable()
+	{
+		NerveAPI::StringList l = mpAPI->getAvailableFactoryIDs();
+		gui->setAvailablePlugins(l);
+	}
+	void toggleTakeOwnership(bool b){mpAPI->setTakeOwnershipOfCreatedPlugins(b);}
+	void toggleHandleChildUIs(bool b){mpAPI->setWillAcceptChildUIs(b);}
 private:
 	NerveAPI* mpAPI;
 	TutorialGui* gui;
 
 	void createGui()
 	{
-		gui=new TutorialGui();
+		gui=new TutorialGui(this);
 		mpAPI->exposeUI(gui);
+		refreshAvailable();		
 	}
 	void destroyGui()
 	{
 		mpAPI->removeUI(gui);
 		delete gui;
+		
 	}
 };
-
-void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * n)
-{
-	delete p;
-}
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
-{
-	return new TutorialPlugin(n);
-}
-const char* TutorialPluginFactory::getName()
-{
-	return "Tutorial Plugin";
-}

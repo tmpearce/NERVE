@@ -8,7 +8,7 @@ class QDialog;
 
 void PluginCreator::operator ()()
 {
-	h = new PluginHandler(a,f);
+	//h->setupAndRun();
 }
 NerveApplication::NerveApplication():qAppExec(0)
 {

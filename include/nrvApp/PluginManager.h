@@ -18,9 +18,9 @@ public:
 		std::string handler_id = createUniqueID(plugin_id);
 		handlerMap[handler_id] = &handler;
 		handler.setID(handler_id);
-		handler.myPluginID = plugin_id;
-		handler.setupAndRun();		
+		handler.myPluginID = plugin_id;		
 		loadedPlugins.push_back(handler_id);
+		handler.setupAndRun();		
 		return handler_id;
 	}
 	std::string destroyHandler(std::string handler_id)
