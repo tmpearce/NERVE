@@ -231,7 +231,7 @@ bool PluginInfo::loadLibrary(PluginRegistry* p)
 {
 	if(!loaded)
 	{
-		QString filename(dll_filename.c_str());
+		QString filename(getFullPath().c_str());
 		hinst=LoadLibrary(filename.toStdWString().c_str());
 		if(!hinst)
 		{
