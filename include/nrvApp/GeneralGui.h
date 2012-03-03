@@ -81,6 +81,8 @@ private:
 class GeneralGui : public QMainWindow
 {
 	Q_OBJECT
+public:
+	typedef std::pair<std::string,bool> PluginPathInfo;
 private:
 signals:
 	void pluginAvailableSignal(const QString&);
@@ -91,6 +93,7 @@ signals:
 	void uiRemovedSignalBlocking(const QString&,const QString&,QWidget*);
 public:
 	GeneralGui(NerveApplication* napp, QWidget * parent = 0);	
+	PluginPathInfo getPluginPathInfo();
 	void pluginAvailable(std::string id){ emit pluginAvailableSignal(id.c_str()); }
 	void pluginUnavailable(std::string id){	emit pluginRemovedSignal(id.c_str()); }
 	void uiAvailable(UIInfo info);
@@ -164,6 +167,7 @@ public:
 
 		QAction* quitAction = new QAction(QString("Quit"),this);
 		connect(quitAction,SIGNAL(triggered()),this,SLOT(requestQuit()));
+		connect(this,SIGNAL(uiOnly(bool)),quitAction,SLOT(setEnabled(bool)));
 		quitAction->setEnabled(!isOnlyUI);//disable the quit function if the application isn't the owner
 
 		myAction->menu()->addAction(showAction);
@@ -218,12 +222,13 @@ public:
 	{
 		if(b==isOnlyUI) return;
 		isOnlyUI=b;
-		QList<QAction*> actionList = myAction->menu()->actions();
+		emit uiOnly(!isOnlyUI);
+		/*QList<QAction*> actionList = myAction->menu()->actions();
 		for(int i=0;i<actionList.size();++i)
 		{
 			if(actionList.at(i)->text()=="Quit")
 				actionList.at(i)->setEnabled(!isOnlyUI);
-		}
+		}*/
 	}
 	int getNumUIs(){return tabWidget->count();}
 public slots:
@@ -235,7 +240,7 @@ signals:
 	void dockStatusChanged(QString id, bool floating);
 	void dockShowStatusChanged(bool b);
 	void quit(QString id);
-	
+	void uiOnly(bool b);
 protected:
 	QTabWidget* tabWidget;
 	QAction* myAction;

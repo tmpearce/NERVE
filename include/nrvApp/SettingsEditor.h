@@ -21,6 +21,61 @@ public:
 	virtual void setGroupString(const QString&)=0;
 	virtual void refresh()=0;
 };
+class PluginPath : public QWidget
+{
+	Q_OBJECT
+public:
+	PluginPath(QWidget* parent = 0):QWidget(parent),useAbsolutePath(false),includeSubDirs(false){}
+	void setup(Ui::SettingsEditor& Ui,QSettings* s)
+	{
+		settings = s;
+		ui=&Ui;
+		ui->useAbsolutePath->setChecked(true);//always use absolute path
+		ui->useAbsolutePath->setEnabled(false);//disable, not implemented yet
+		pathAbsolute = settings->value("PluginPath/pathAbsolute").toString();
+		ui->currentPath->setText(pathAbsolute);
+		includeSubDirs = settings->value("PluginPath/includeSubDirs").toBool();
+		ui->includeSubDirs->setChecked(includeSubDirs);
+		connect(ui->buttonApply_4,SIGNAL(clicked()),this,SLOT(apply()));
+		connect(ui->editPath,SIGNAL(clicked()),this,SLOT(editPath()));
+		connect(ui->useAbsolutePath,SIGNAL(toggled(bool)),this,SLOT(useAbsPathToggled()));
+		connect(ui->includeSubDirs,SIGNAL(toggled(bool)),this,SLOT(useSubDirsToggled()));
+		connect(ui->currentPath,SIGNAL(textChanged(const QString&)),this,SLOT(textChanged()));
+	}
+	std::string currentPath(){return pathAbsolute.toStdString();}
+	bool useSubDirs(){return includeSubDirs;}
+public slots:
+	void editPath()
+	{
+		QFileDialog fd(this,"Select plugin path...",pathAbsolute);
+		fd.setOption(QFileDialog::ShowDirsOnly);
+		fd.setFileMode(QFileDialog::DirectoryOnly);
+		if(fd.exec())
+		{
+			QDir dir = fd.directory();
+			ui->currentPath->setText(dir.path());
+			
+		}
+	}
+	void textChanged(){ui->pluginPathPageStatus->setText("Settings changed but not applied");}
+	void useAbsPathToggled(){ui->pluginPathPageStatus->setText("Settings changed but not applied");}
+	void useSubDirsToggled(){ui->pluginPathPageStatus->setText("Settings changed but not applied");}
+	void apply()
+	{
+		pathAbsolute = ui->currentPath->text();
+		includeSubDirs = ui->includeSubDirs->isChecked();
+		ui->pluginPathPageStatus->setText("");
+		settings->setValue("PluginPath/pathAbsolute",pathAbsolute);
+		settings->setValue("PluginPath/includeSubDirs",includeSubDirs);
+	}
+protected:
+	QString pathAbsolute;
+	QString pathRelative;
+	bool useAbsolutePath;
+	bool includeSubDirs;
+	Ui::SettingsEditor* ui;
+	QSettings* settings;
+};
 
 class SettingsEditor : public QDialog
 {
@@ -52,25 +107,15 @@ public:
 		startupPage->load(settings);
 	}
 	QString getStartupPlugin();
-	
+	std::pair<std::string,bool> getPluginPathInfo(){return std::pair<std::string,bool>(pp.currentPath(),pp.useSubDirs());}
 public slots:
-	/*void applySettings(int page)
-	{
-		printf("apply %i clicked\n",page);
-		switch(page)
-		{
-		case 1: applyPageSettings1(); break;
-		case 2: applyPageSettings2(); break;
-		case 3: applyPageSettings3(); break;
-		}
-	}*/
+	void applyPluginPath();
 private:
 	Ui::SettingsEditor ui;
+	PluginPath pp;
 	QSettings* settings;
-	QSignalMapper signalMapper;
-	
+	QSignalMapper signalMapper;	
 	QStringList pluginTypes;
-
 	SettingsPage* startupPage;
 	
 };

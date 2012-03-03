@@ -4,21 +4,28 @@ SettingsEditor::SettingsEditor(QSettings* s, QWidget* parent)
 	{
 		settings=s;
 		ui.setupUi(this);
-		ui.stackedWidget->setCurrentIndex(0);
+		pp.setup(ui,settings);
+		ui.stackedWidget->setCurrentWidget(ui.menuPage);
 
-		connect(&signalMapper,SIGNAL(mapped(int)),ui.stackedWidget,SLOT(setCurrentIndex(int)));
-		signalMapper.setMapping(ui.buttonStartup,1);
+		//Set up the mappings from buttons on the menuPage to the appropriate widgets
+		connect(&signalMapper,SIGNAL(mapped(QWidget*)),ui.stackedWidget,SLOT(setCurrentWidget(QWidget*)));
+		signalMapper.setMapping(ui.buttonStartup,ui.startupPage);
 		connect(ui.buttonStartup,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonFavorites,2);
+		signalMapper.setMapping(ui.buttonFavorites,ui.favoritesPage);
 		connect(ui.buttonFavorites,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonMain_GUI,3);
+		signalMapper.setMapping(ui.buttonMain_GUI,ui.mainGuiPage);
 		connect(ui.buttonMain_GUI,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn,0);
+		signalMapper.setMapping(ui.buttonPluginPath,ui.pluginPathPage);
+		connect(ui.buttonPluginPath,SIGNAL(clicked()),&signalMapper,SLOT(map()));
+
+		signalMapper.setMapping(ui.buttonReturn,ui.menuPage);
 		connect(ui.buttonReturn,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn_2,0);
+		signalMapper.setMapping(ui.buttonReturn_2,ui.menuPage);
 		connect(ui.buttonReturn_2,SIGNAL(clicked()),&signalMapper,SLOT(map()));
-		signalMapper.setMapping(ui.buttonReturn_3,0);
+		signalMapper.setMapping(ui.buttonReturn_3,ui.menuPage);
 		connect(ui.buttonReturn_3,SIGNAL(clicked()),&signalMapper,SLOT(map()));
+		signalMapper.setMapping(ui.buttonReturn_4,ui.menuPage);
+		connect(ui.buttonReturn_4,SIGNAL(clicked()),&signalMapper,SLOT(map()));
 
 		connect(ui.buttonDone,SIGNAL(clicked()),this,SLOT(close()));
 				
@@ -34,4 +41,7 @@ QString SettingsEditor::getStartupPlugin()
 	StartupPage* s = dynamic_cast<StartupPage*>(startupPage);
 	if(s)	return s->getCurrentSelection();
 	else return QString();
+}
+void SettingsEditor::applyPluginPath()
+{
 }

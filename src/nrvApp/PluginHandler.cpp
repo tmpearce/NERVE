@@ -244,7 +244,7 @@ void PluginHandler::cancelPluginAPIBinding(std::string id)
 		myPluginAPI = 0;
 	}
 }
-int PluginHandler::getNumExposedUIs(){return myUIs.size();}
+int PluginHandler::getNumExposedUIs(){return (int) myUIs.size();}
 QWidget* PluginHandler::exposeUI(QWidget* ui,std::string title)
 {
 	myUIs.insert(ui);

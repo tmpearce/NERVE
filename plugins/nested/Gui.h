@@ -3,7 +3,8 @@
 #include <QIntValidator>
 #include <QString>
 #include <QStringListModel>
-
+#include <QTimer>
+#include <QThread>
 class TutorialPlugin;
 
 class TutorialGui : public QDialog
@@ -19,10 +20,13 @@ public:
 		connect(ui.refresh,SIGNAL(clicked()),this,SLOT(refreshAvailable()));
 		connect(ui.ownershipBox,SIGNAL(toggled(bool)),this,SLOT(toggleOwnership(bool)));
 		connect(ui.childUIBox,SIGNAL(toggled(bool)),this,SLOT(toggleChildUIs(bool)));
+		connect(ui.killButton,SIGNAL(clicked()),this,SLOT(kill()));
+		connect(ui.detachButton,SIGNAL(clicked()),this,SLOT(detach()));
 	}
 	void addPlugin(std::string name)
 	{
 		childList.push_back(QString::fromStdString(name));
+		childModel.setStringList(childList);
 	}
 	void setAvailablePlugins(std::vector<std::string> l)
 	{
@@ -38,6 +42,8 @@ public slots:
 	void refreshAvailable();
 	void toggleOwnership(bool);
 	void toggleChildUIs(bool);
+	void kill();
+	void detach();
 protected:
 	TutorialPlugin* plugin;
 	Ui::TutorialDialog ui;
@@ -45,4 +51,15 @@ protected:
 	QStringListModel pluginModel;
 	QStringList childList;
 	QStringList pluginList;
+};
+
+class A
+{
+public:
+	A(int i){}
+};
+class B : A
+{
+public:
+	B(int i):A(i*5){}
 };

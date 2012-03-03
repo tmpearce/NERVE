@@ -19,6 +19,12 @@ NerveApplication::NerveApplication():qAppExec(0)
 	gui = new GeneralGui(this);
 
 }
+std::vector<std::string> NerveApplication::refreshPlugins()
+{
+	GeneralGui::PluginPathInfo p = gui->getPluginPathInfo();
+	pluginRegistry.discoverPlugins(p.first,p.second);
+	return getAvailableFactoryIDs();
+}
 bool NerveApplication::isQObjectInQApplicationThread(QObject* o)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
@@ -38,7 +44,7 @@ void NerveApplication::launch()
 	windowpos.Left = 100;
 	SetConsoleWindowInfo(window, false, &windowpos);*/
 
-	pluginRegistry.discoverPlugins();
+	refreshPlugins();
 	gui->refreshPluginList();
 	gui->init();
 	gui->move(300,50);

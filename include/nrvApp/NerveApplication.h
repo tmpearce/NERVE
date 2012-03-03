@@ -65,11 +65,7 @@ public:
 		PLUGIN_OWNED_BY_APPLICATION,
 		PLUGIN_OWNED_BY_PLUGIN
 	};
-	std::vector<std::string> refreshPlugins()
-	{
-		pluginRegistry.discoverPlugins();
-		return getAvailableFactoryIDs();
-	}
+	std::vector<std::string> refreshPlugins();
 	std::vector<std::string> getAvailableFactoryIDs()
 	{
 		return pluginRegistry.getPluginTypes();

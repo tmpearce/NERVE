@@ -14,8 +14,17 @@ struct PluginInfo
 {
 	typedef std::map<std::string, NervePluginFactory*> FactoryMap;
 
-	PluginInfo(std::string filename):dll_filename(filename),hinst(0),num_references(0),loaded(false),allow_runtime_unloading(true){}
+	PluginInfo(std::string filename, std::string dir):
+		dll_filename(filename),
+		dll_directory(dir),
+		hinst(0),
+		num_references(0),
+		loaded(false),
+		allow_runtime_unloading(true)
+		{}
 	std::string dll_filename;
+	std::string dll_directory;
+	std::string getFullPath(){return dll_directory + dll_filename;}
 	HINSTANCE hinst;
 	bool loaded;
 	bool allow_runtime_unloading;
@@ -40,7 +49,7 @@ private:
 	PluginRegistry():taskRegistry(0){taskRegistry = TaskRegistry(this);}
 	~PluginRegistry(){}
 	std::vector<std::string> getPluginTypes(){return pluginTypes;}
-	void discoverPlugins();
+	void discoverPlugins(std::string directory, bool useSubDirs);
 	void clearUnloadedPluginsFromInfoList();
 	NervePluginFactory* getFactory(std::string id_string);
 	void releaseFactory(std::string id_string);

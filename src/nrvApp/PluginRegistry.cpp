@@ -2,68 +2,113 @@
 #include "nrvApp\NervePluginFactory.h"
 #include <QtCore/QString>
 #include <sstream>
+std::vector<std::pair<std::wstring, std::wstring> >FindFiles(std::wstring directory, std::wstring templateString, bool recurse)
+{
+	std::vector<std::pair<std::wstring,std::wstring> > files;
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind;
+	if(directory.empty()) directory=TEXT(".");
+	directory.append(TEXT("/"));
+	LPCWSTR dir = directory.c_str();
+	/*wprintf(TEXT("Searching directory %s\n"),dir);*/
+	
+	//First look for template matches
+	hFind=FindFirstFile((directory + templateString).c_str(),&ffd);
+	do
+	{
+		if (hFind == INVALID_HANDLE_VALUE) { /*printf("invalid handle value\n"); */break; }
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+		files.push_back(std::pair<std::wstring,std::wstring>(directory,std::wstring(ffd.cFileName)));
+	}while(FindNextFile(hFind,&ffd) != 0);
 
+	//If recurse is true, recurse through subdirectories
+	if(recurse)
+	{
+		hFind=FindFirstFile((directory + TEXT("*")).c_str(),&ffd);
+		do
+		{
+			if (hFind == INVALID_HANDLE_VALUE) { /*printf("invalid handle value\n"); */break; }
+			/*wprintf(TEXT("%s\n"),ffd.cFileName);*/
+			if (wcscmp(ffd.cFileName,TEXT("."))==0 || wcscmp(ffd.cFileName,TEXT(".."))==0) continue;
+			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
+			{
+				std::vector<std::pair<std::wstring,std::wstring> > df =
+					FindFiles(directory + ffd.cFileName, templateString, recurse);
+				files.insert(files.end(),df.begin(),df.end() );
+			}
+		}while(FindNextFile(hFind,&ffd) != 0);
+	}
 
+	return files;
+}
+
+typedef void (__cdecl *PLUGIN_DLL_FUNC)(PluginRegistry*);
+void loadPlugin(std::wstring filename, std::wstring dir, 
+				 std::list<PluginInfo> &pluginInfoList,
+				 std::list<PluginInfo>::iterator &activePluginInfoIter,
+				 PluginRegistry* registry)
+{
+	std::wstring file = dir+filename;
+	//wprintf(TEXT("%s\n"),file.c_str());
+	HINSTANCE hinst= LoadLibrary(file.c_str());
+	if(!hinst)
+	{
+		wprintf(TEXT("Failure in LoadLibrary(%s: error code %i): check for missing dependencies\n"), file.c_str(),GetLastError()); 
+	}
+	else
+	{
+		PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, LPCSTR("RegisterNervePlugin"));
+		if(registerPlugin)
+		{
+			QString tempstr = QString::fromStdWString(file);
+			std::list<PluginInfo>::iterator iter = pluginInfoList.begin();
+			bool shouldskip = false;
+			while(iter != pluginInfoList.end())
+			{
+				if(iter->getFullPath() == tempstr.toStdString() )
+				{
+					//printf("Plugin %s already loaded; skipping\n",tempstr.toAscii().constData());
+					FreeLibrary(hinst);
+					shouldskip=true;
+					break;
+				}
+				++iter;
+			}
+			if(shouldskip) return;
+
+			pluginInfoList.push_back(
+				PluginInfo(QString::fromStdWString(filename).toStdString(),
+				           QString::fromStdWString(dir).toStdString()));
+
+			activePluginInfoIter = pluginInfoList.end();
+			--activePluginInfoIter;
+			registerPlugin(registry);
+			pluginInfoList.back().hinst = hinst;
+			pluginInfoList.back().loaded = true;
+			pluginInfoList.back().freeLibrary();
+		}
+		else
+		{
+			FreeLibrary(hinst);
+		}
+	}
+}
 void PluginRegistry::accept(NervePluginFactory * factory)
 {	
 	activePluginInfoIter->addFactory(factory);
 }
-typedef void (__cdecl *PLUGIN_DLL_FUNC)(PluginRegistry*);
-void PluginRegistry::discoverPlugins()
+
+void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 {
 	clearUnloadedPluginsFromInfoList();
-
-	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind;
-	hFind = FindFirstFile(TEXT("*.dll"), &FindFileData);
-	do
+	std::vector<std::pair<std::wstring,std::wstring> > files =
+		FindFiles(QString::fromStdString(directory).toStdWString(), std::wstring(TEXT("*.dll")),useSubDirs);
+	
+	for(int i=0;i<files.size();++i)
 	{
-		if (hFind == INVALID_HANDLE_VALUE) { break; } 
-		else 
-		{
-			HINSTANCE hinst= LoadLibrary(FindFileData.cFileName);
-			if(!hinst)
-			{
-				wprintf(TEXT("Failure in LoadLibrary(%s: error code %i): check for missing dependencies\n"), FindFileData.cFileName,GetLastError()); 
-				continue;
-			}
-			else
-			{
-				PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, LPCSTR("RegisterNervePlugin"));
-				if(registerPlugin)
-				{
-					QString tempstr = QString::fromWCharArray(FindFileData.cFileName);
-					std::list<PluginInfo>::iterator iter = pluginInfoList.begin();
-					bool shouldskip = false;
-					while(iter != pluginInfoList.end())
-					{
-						if(iter->dll_filename == tempstr.toStdString() )
-						{
-							//printf("Plugin %s already loaded; skipping\n",tempstr.toAscii().constData());
-							FreeLibrary(hinst);
-							shouldskip=true;
-							break;
-						}
-						++iter;
-					}
-					if(shouldskip)continue;
+		loadPlugin(files[i].second,files[i].first,pluginInfoList,activePluginInfoIter,this);
 
-					pluginInfoList.push_back(PluginInfo(tempstr.toStdString()));
-					activePluginInfoIter = pluginInfoList.end();
-					--activePluginInfoIter;
-					registerPlugin(this);
-					pluginInfoList.back().hinst = hinst;
-					pluginInfoList.back().loaded = true;
-					pluginInfoList.back().freeLibrary();
-				}
-				else
-				{
-					FreeLibrary(hinst);
-				}
-			}
-		}
 	}
-	while(FindNextFile(hFind, &FindFileData) != 0);
 
 	discoverTasks();
 	setPluginTypes();
@@ -108,7 +153,7 @@ void PluginRegistry::discoverTasks()
 					}
 					if(shouldskip)continue;
 
-					pluginInfoList.push_back(PluginInfo(tempstr.toStdString()));
+					pluginInfoList.push_back(PluginInfo(tempstr.toStdString(), std::string("./")));
 					activePluginInfoIter = pluginInfoList.end();
 					--activePluginInfoIter;
 

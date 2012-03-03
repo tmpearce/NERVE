@@ -11,7 +11,7 @@ public:
 		CREATE_GUI,
 		DESTROY_GUI
 	};
-	TutorialPlugin(NerveAPI* n)
+	TutorialPlugin(NerveAPI* n):ownershipOfChildPlugins(false),handleChildUIs(false)
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
@@ -28,20 +28,26 @@ public:
 		case DESTROY_GUI: destroyGui(); break;
 		}
 	}
-	void create(std::string pname)
+	void create(std::string name)
 	{
-		mpAPI->createPlugin(pname);
+		std::string pname = mpAPI->createPlugin(name);
+		if(pname.empty()) refreshAvailable();
+		else if(ownershipOfChildPlugins) gui->addPlugin(pname);
 	}
+	void cancelChild(std::string name){mpAPI->cancelChildPlugin(name);}
+	void detachChild(std::string name){mpAPI->detachChildPlugin(name);}
 	void refreshAvailable()
 	{
 		NerveAPI::StringList l = mpAPI->getAvailableFactoryIDs();
 		gui->setAvailablePlugins(l);
 	}
-	void toggleTakeOwnership(bool b){mpAPI->setTakeOwnershipOfCreatedPlugins(b);}
-	void toggleHandleChildUIs(bool b){mpAPI->setWillAcceptChildUIs(b);}
+	void toggleTakeOwnership(bool b){ownershipOfChildPlugins=b;mpAPI->setTakeOwnershipOfCreatedPlugins(b);}
+	void toggleHandleChildUIs(bool b){handleChildUIs=b;mpAPI->setWillAcceptChildUIs(b);}
 private:
 	NerveAPI* mpAPI;
 	TutorialGui* gui;
+	bool ownershipOfChildPlugins;
+	bool handleChildUIs;
 
 	void createGui()
 	{

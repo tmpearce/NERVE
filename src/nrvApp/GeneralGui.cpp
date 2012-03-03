@@ -23,6 +23,7 @@ qAppThread(QApplication::instance()->thread())
 	appSettings = new QSettings("Moran Lab","NERVE");
 	settingsEditor = new SettingsEditor(appSettings, this);
 	settingsEditor->hide();
+	settingsEditor->loadSettings();
 
 	connect(timer,SIGNAL(timeout()),this,SLOT(update()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(quit()));
@@ -67,6 +68,7 @@ void GeneralGui::init()//called after plugins are detected
 		createPlugin(p);
 	}
 }
+GeneralGui::PluginPathInfo GeneralGui::getPluginPathInfo(){return settingsEditor->getPluginPathInfo();}
 /*******Slot definitions for GUI actions***********/
 void GeneralGui::quit()
 {
