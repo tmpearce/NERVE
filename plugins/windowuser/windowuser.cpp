@@ -3,6 +3,7 @@
 #include "nrvApp/NerveAPI.h"
 #include "nrvApp/NervePluginFactory.h"
 #include "nrvApp/NervePluginBase.h"
+#include "osgwindow_plugin.h"
 
 //files from this project
 #include "GuiHeader.h"
@@ -33,6 +34,10 @@ public:
 		case DESTROY_GUI: destroyGui(); break;
 		}
 	}
+	void acceptChildUI(QWidget* ui)
+	{
+		gui->acceptChildUI(ui);
+	}
 private:
 	NerveAPI* mpAPI;
 	TutorialGui* gui;
@@ -41,6 +46,11 @@ private:
 	{
 		gui=new TutorialGui();
 		mpAPI->exposeUI(gui);
+		mpAPI->setTakeOwnershipOfCreatedPlugins(true);
+		mpAPI->setWillAcceptChildUIs(true);
+		std::string window_plugin = mpAPI->createPlugin("OSG Window <osgwindow.dll>");
+		//mpAPI->get
+		//printf("trying to create osgwindow: %s\n",mpAPI->createPlugin("OSG Window <osgwindow.dll>").c_str());
 	}
 	void destroyGui()
 	{

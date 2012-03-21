@@ -304,7 +304,8 @@ void PluginHandler::acceptChildUI(QWidget* child_ui,std::string child_id,std::st
 void PluginHandler::setupAndRun()
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	myPlugin = myPluginFactory->createPluginObject(&myAPI);
+	myPlugin = myPluginFactory->createPluginObject();
+	myPlugin->init(&myAPI);
 	if(threadingRequested && !myThreadIsRunning) useThreadedMode();
 		
 }

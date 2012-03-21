@@ -22,6 +22,7 @@ set(SRCFILES
 	./src/nrvApp/TaskAdapter.cpp
 	./src/nrvApp/TaskAdapterGui.cpp
 	./src/nrvApp/TaskRegistry.cpp
+	./src/nrvAPp/NervePluginFactory.cpp
 	#################.ui files
 	./src/nrvApp/GeneralGui.ui
 	./src/nrvApp/SettingsEditor.ui
@@ -89,7 +90,7 @@ include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 #directories for the Properties->C/C++->General->
 #   Additional Include Directories field
-include_directories("C:/Users/Tom/NERVE/include")
+include_directories("./include")
 
 #directories for the Properties->Linker->General->
 #   Additional Library Directories field
@@ -110,6 +111,7 @@ target_link_libraries(NerveApp winmm)
 add_definitions(-D_UNICODE 
 		-DBUILD_NERVEAPPLICATION_LIBRARY
 		-DBUILD_NERVETASK_LEGACY_LIBRARY
+		-DNERVE_VERSION=2
 		)
 #set compiler flags
 set_target_properties(NerveApp

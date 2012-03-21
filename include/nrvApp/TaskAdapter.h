@@ -79,7 +79,7 @@ class TaskAdapterFactory : public NervePluginFactory
 {
 public:
 	TaskAdapterFactory(Task* t):_t(t){}
-	NervePluginBase* createPluginObject(NerveAPI* appInterface);
+	NervePluginBase* createPluginObject();
 	void cleanUpPluginObject(NervePluginBase* plugin,NerveAPI* appInterface)
 	{
 		QWidget* ui = appInterface->removeUI(0);
@@ -169,18 +169,20 @@ struct PreviewGui : public FunctionQueueQt::Functionoid
 class TaskAdapter : public NervePluginBase, public UsesSlots
 {
 public:
-	TaskAdapter(TaskAdapterFactory* taf, NerveAPI* papi):
+	TaskAdapter(TaskAdapterFactory* taf):
 		factory(taf),
 		task(0),
-		pAPI(papi),
+		pAPI(0),
 		runStatus(false),
 		completedStatus(false),
 		launchStatus(false),
 		loadConfigFileAtLaunch(false),
 		loadConfigStringAtLaunch(false),
 		serviceAvailableObserver(this,&TaskAdapter::serviceAvailable),
-		serviceUnavailableObserver(this,&TaskAdapter::serviceUnavailable)
+		serviceUnavailableObserver(this,&TaskAdapter::serviceUnavailable){}
+	void init(NerveAPI* api)
 	{
+		pAPI = api;
 		tag = new TaskAdapterGui();
 		pAPI->exposeUI(tag,"Adapter");
 		pAPI->useThreadedMode();

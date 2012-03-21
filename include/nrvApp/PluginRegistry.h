@@ -46,7 +46,14 @@ public:
 	void accept(NervePluginFactory * factory);
 		
 private:
-	PluginRegistry():taskRegistry(0){taskRegistry = TaskRegistry(this);}
+	PluginRegistry():taskRegistry(0)
+	{
+		taskRegistry = TaskRegistry(this);
+		HMODULE hModule = LoadLibraryEx(L"Kernel32.dll",0,0);
+		if(!hModule)printf("Failed to load Kernel32.dll\n");
+		AddDllDirectory = (ADDDLLDIRECTORY)GetProcAddress(hModule, "AddDllDirectory");
+		if(!AddDllDirectory)printf("AddDllDirectory==0\n");
+	}
 	~PluginRegistry(){}
 	std::vector<std::string> getPluginTypes(){return pluginTypes;}
 	void discoverPlugins(std::string directory, bool useSubDirs);
@@ -61,6 +68,9 @@ private:
 
 	TaskRegistry taskRegistry;//backwards compatibility only
 	void discoverTasks();//backwards compatibility only
+
+	typedef void (__cdecl *ADDDLLDIRECTORY)(PCWSTR);
+	ADDDLLDIRECTORY AddDllDirectory;
 
 	friend class NerveApplication;
 };

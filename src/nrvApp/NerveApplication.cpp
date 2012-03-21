@@ -3,7 +3,6 @@
 #include <iostream>
 #include "nrvApp/GeneralGui.h"
 #include <QtCore/QObject>
-
 class QDialog;
 
 void PluginCreator::operator ()()

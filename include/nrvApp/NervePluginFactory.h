@@ -3,13 +3,13 @@
 //class QDialog;
 class NerveAPI;
 
+
 class NervePluginFactory
 {
 public:
-	virtual NervePluginBase*	createPluginObject(NerveAPI*) = 0;
+	static int getNerveVersion();
+	virtual NervePluginBase*	createPluginObject() = 0;
 	virtual void				cleanUpPluginObject(NervePluginBase*,NerveAPI*) = 0;
-	//virtual QDialog*			createInterfaceObject(int id) = 0;
-	//virtual void				cleanUpInterfaceObject(QDialog* ui) = 0;
 	virtual const char*			getName() = 0;
 	virtual void                selfCleanup(){delete this;}
 	/* Read the following about selfCleanup():

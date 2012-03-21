@@ -1,6 +1,6 @@
 //include files for making a plugin
 #include "nrv/PluginDeveloperTools.h"
-//#include "nrvApp/NerveAPI.h"
+#include "nrvApp/NerveAPI.h"
 #include "nrvApp/NervePluginFactory.h"
 #include "nrvApp/NervePluginBase.h"
 
@@ -13,9 +13,9 @@ void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * 
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new osgwindow(n);
+	return new osgwindow();
 }
 const char* TutorialPluginFactory::getName()
 {

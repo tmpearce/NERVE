@@ -6,6 +6,7 @@
 
 //files from this project
 #include "GuiHeader.h"
+#include "OptotrakModule.h"
 M_MAKE_PLUGIN(TutorialPluginFactory)
 
 class TutorialPlugin : public NervePluginBase
@@ -35,11 +36,11 @@ public:
 	}
 private:
 	NerveAPI* mpAPI;
-	TutorialGui* gui;
-
+	OptotrakGui* gui;
+	OptotrakModule optotrakModule;
 	void createGui()
 	{
-		gui=new TutorialGui();
+		gui=new OptotrakGui();
 		mpAPI->exposeUI(gui);
 	}
 	void destroyGui()
@@ -61,5 +62,5 @@ NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
 
 const char* TutorialPluginFactory::getName()
 {
-	return "Tutorial Plugin";
+	return "Optotrak Interface";
 }

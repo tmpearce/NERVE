@@ -1,3 +1,4 @@
+#pragma once
 #include "ui_osgwindow.h"
 #include <QIntValidator>
 #include <QString>

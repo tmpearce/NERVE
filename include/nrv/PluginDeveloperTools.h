@@ -8,7 +8,7 @@ extern "C" __declspec(dllexport) void __cdecl RegisterNervePlugin(PluginRegistry
 class FactoryClass : public NervePluginFactory \
 { \
 public: \
-	NervePluginBase* createPluginObject(NerveAPI*); \
+	NervePluginBase* createPluginObject(); \
 	void cleanUpPluginObject(NervePluginBase*,NerveAPI*); \
 	const char* getName(); \
 	void selfCleanup(){delete this;} \

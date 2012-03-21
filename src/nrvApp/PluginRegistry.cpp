@@ -2,6 +2,8 @@
 #include "nrvApp\NervePluginFactory.h"
 #include <QtCore/QString>
 #include <sstream>
+#include "winbase.h"
+
 std::vector<std::pair<std::wstring, std::wstring> >FindFiles(std::wstring directory, std::wstring templateString, bool recurse)
 {
 	std::vector<std::pair<std::wstring,std::wstring> > files;
@@ -41,8 +43,34 @@ std::vector<std::pair<std::wstring, std::wstring> >FindFiles(std::wstring direct
 
 	return files;
 }
+std::vector<std::wstring>FindDirectories(std::wstring directory)
+{
+	std::vector<std::wstring> dirs;
+	dirs.push_back(directory);
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind;
+	if(directory.empty()) directory=TEXT(".");
+	directory.append(TEXT("/"));
+	LPCWSTR dir = directory.c_str();
+	
+	hFind=FindFirstFile((directory + TEXT("*")).c_str(),&ffd);
+	do
+	{
+		if (hFind == INVALID_HANDLE_VALUE) { /*printf("invalid handle value\n"); */break; }
+		if (wcscmp(ffd.cFileName,TEXT("."))==0 || wcscmp(ffd.cFileName,TEXT(".."))==0) continue;
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
+		{
+			std::vector<std::wstring> d =
+				FindDirectories(directory + ffd.cFileName);
+			dirs.insert(dirs.end(),d.begin(),d.end() );
+		}
+	}while(FindNextFile(hFind,&ffd) != 0);
 
+
+	return dirs;
+}
 typedef void (__cdecl *PLUGIN_DLL_FUNC)(PluginRegistry*);
+
 void loadPlugin(std::wstring filename, std::wstring dir, 
 				 std::list<PluginInfo> &pluginInfoList,
 				 std::list<PluginInfo>::iterator &activePluginInfoIter,
@@ -50,13 +78,16 @@ void loadPlugin(std::wstring filename, std::wstring dir,
 {
 	std::wstring file = dir+filename;
 	//wprintf(TEXT("%s\n"),file.c_str());
-	HINSTANCE hinst= LoadLibrary(file.c_str());
+	HINSTANCE hinst;
+	hinst=LoadLibraryEx(file.c_str(),0,0);
+	
 	if(!hinst)
 	{
 		wprintf(TEXT("Failure in LoadLibrary(%s: error code %i): check for missing dependencies\n"), file.c_str(),GetLastError()); 
 	}
 	else
-	{
+	{	
+		//wprintf(TEXT("Loaded %s\n"),file.c_str());
 		PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, LPCSTR("RegisterNervePlugin"));
 		if(registerPlugin)
 		{
@@ -101,6 +132,30 @@ void PluginRegistry::accept(NervePluginFactory * factory)
 void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 {
 	clearUnloadedPluginsFromInfoList();
+	
+	//Restore the default dll search order
+	SetDllDirectory(0);
+	//Add plugin path directories to the dll search path
+	if(AddDllDirectory != 0)
+	{
+		std::vector<std::wstring> dlluserpath;
+		if(useSubDirs)
+		{
+			 dlluserpath = FindDirectories(QString::fromStdString(directory).toStdWString());
+		}
+		else
+		{
+			dlluserpath.push_back(QString::fromStdString(directory).toStdWString());
+		}
+		
+		for(std::vector<std::wstring>::iterator it = dlluserpath.begin();it!=dlluserpath.end();++it)
+		{
+			AddDllDirectory((*it).c_str());
+				//((*it).c_str());
+			//if(ret==0) printf("Problem adding directory to dll search path\n");
+		}
+	}
+	//find plugins
 	std::vector<std::pair<std::wstring,std::wstring> > files =
 		FindFiles(QString::fromStdString(directory).toStdWString(), std::wstring(TEXT("*.dll")),useSubDirs);
 	
@@ -228,17 +283,19 @@ void PluginRegistry::releaseFactory(std::string id)
 	}
 }
 bool PluginInfo::loadLibrary(PluginRegistry* p)
-{
+{	
 	if(!loaded)
 	{
 		QString filename(getFullPath().c_str());
-		hinst=LoadLibrary(filename.toStdWString().c_str());
+		hinst=LoadLibraryEx(filename.toStdWString().c_str(),0,0);
+		
 		if(!hinst)
 		{
 			wprintf(TEXT("Failure in LoadLibrary(%s: error code %i): check for missing dependencies\n"),filename.toStdWString().c_str(),GetLastError()); 
 		}
 		else
 		{
+			//wprintf(TEXT("Loaded %s\n"),filename.toStdWString().c_str());
 			PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, LPCSTR("RegisterNervePlugin"));
 			if(registerPlugin)
 			{
