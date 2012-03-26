@@ -1,4 +1,8 @@
 #define M_MAKE_EXPORT_PLUGIN(FactoryClass) \
+extern "C" __declspec(dllexport) int __cdecl CompatibleNerveVersion() \
+{ \
+	return EXPECTED_VERSION; \
+} \
 extern "C" __declspec(dllexport) void __cdecl RegisterNervePlugin(PluginRegistry * registry) \
 { \
 	NerveAPI::registerWithApplication(new FactoryClass(),registry); \

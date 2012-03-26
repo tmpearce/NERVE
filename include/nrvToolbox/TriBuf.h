@@ -14,9 +14,9 @@ class TriBuf
 
 	~TriBuf()
 	{
-		delete[] _d[0];
-		delete[] _d[1];
-		delete[] _d[2];
+		delete _d[0];
+		delete _d[1];
+		delete _d[2];
 	}
 	void setData(T& s)
 	{		

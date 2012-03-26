@@ -2,6 +2,8 @@
 class QWidget;
 class NerveAPI;
 
+#define EXPECTED_VERSION 1
+
 class NervePluginBase
 {
 public:

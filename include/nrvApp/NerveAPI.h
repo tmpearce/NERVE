@@ -19,9 +19,10 @@ class PluginRegistry;
 class NervePluginFactory;
 class NervePluginBase;
 
-class PluginAPI
+class IPlugin
 {
-	virtual ~PluginAPI()=0;
+public:
+	virtual ~IPlugin(){}
 };
 
 class NERVEPLUGIN NerveAPI
@@ -51,6 +52,9 @@ public:
 	void							useThreadedMode();
 	void							callPluginFromMainThread(NervePluginBase* p, int call_id, CALLBACK_REQUESTS_BLOCKING_STATUS status);
 
+	//Timing
+	long long int					getCurrentTime();
+
 	//Plugins
 	StringList						getLoadedPluginIDs();
 	StringList						getAvailableFactoryIDs();
@@ -59,10 +63,12 @@ public:
 	std::string						createPlugin(std::string factory_id);
 	void							cancelChildPlugin(std::string plugin_id);//null operation if this plugin doesn't own the other plugin
 	void							detachChildPlugin(std::string plugin_id);
-	PluginAPI*						bindPluginAPI(std::string plugin_id);
-	void							unbindPluginAPI(PluginAPI* p);
-	bool							exposePluginAPI(PluginAPI* p);//returns success - will fail if there is already an API exposed
-	int								hidePluginAPI();//returns the number of plugins that haven't released the API - 0 when all have unbound
+
+
+	IPlugin*						bindIPlugin(std::string plugin_id);
+	void							unbindIPlugin(IPlugin* p);
+	bool							exposeIPlugin(IPlugin* p);//returns success - will fail if there is already an API exposed
+	int								hideIPlugin();//returns the number of plugins that haven't released the API - 0 when all have unbound
 
 	//Qt guis
 	int								getNumExposedUIs();

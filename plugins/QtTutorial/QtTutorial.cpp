@@ -16,7 +16,7 @@ public:
 		CREATE_GUI,
 		DESTROY_GUI
 	};
-	TutorialPlugin(NerveAPI* n)
+	void init(NerveAPI* n)
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
@@ -53,9 +53,9 @@ void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * 
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new TutorialPlugin(n);
+	return new TutorialPlugin();
 }
 
 

@@ -41,8 +41,8 @@ PluginHandler::PluginHandler(NerveApplication& app, NervePluginFactory& factory)
 		takeOwnershipOfPluginsICreate(false),
 		willAcceptChildPluginUIs(false),
 		myAPI(this),
-		myPluginAPI(0),
-		pluginAPIExposed(false)
+		myIPlugin(0),
+		IPluginExposed(false)
 {		
 	myThread = new NerveThread();
 }
@@ -88,7 +88,7 @@ PluginHandler::~PluginHandler()
 	}
 	delete myThread;
 }
-
+long long int PluginHandler::getCurrentTime(){return nerveApp->getTime();}
 void PluginHandler::addService(ServiceFactory* service){nerveApp->handlerExposeService(myID,service);}
 void PluginHandler::removeService(ServiceFactory* service){nerveApp->handlerHideService(myID,service);}
 void PluginHandler::useThreadedMode()
@@ -174,74 +174,74 @@ void PluginHandler::detachChildPlugin(std::string plugin_id)
 {
 	nerveApp->assumePluginOwnership(nerveApp->getPluginHandler(plugin_id));
 }
-PluginAPI* PluginHandler::bindPluginAPI(std::string plugin_id)
+IPlugin* PluginHandler::bindIPlugin(std::string plugin_id)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
 	PluginHandler* h=nerveApp->getPluginHandler(plugin_id);
-	PluginAPI* p = h->getPluginAPIBinding(myID);
+	IPlugin* p = h->getIPluginBinding(myID);
 	if(p!=0)
 	{
-		pluginAPIProviderMap[p] = plugin_id;
+		m_IPluginProviderMap[p] = plugin_id;
 	}
 	return p;
 }
-void PluginHandler::unbindPluginAPI(PluginAPI* p)
+void PluginHandler::unbindIPlugin(IPlugin* p)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	PluginAPIProviderMap::iterator iter = pluginAPIProviderMap.find(p);
-	if(iter != pluginAPIProviderMap.end())
+	IPluginProviderMap::iterator iter = m_IPluginProviderMap.find(p);
+	if(iter != m_IPluginProviderMap.end())
 	{
 		PluginHandler* h=nerveApp->getPluginHandler(iter->second);
-		h->cancelPluginAPIBinding(myID);
+		h->cancelIPluginBinding(myID);
 	}
 	
 }
-bool PluginHandler::exposePluginAPI(PluginAPI* p)
+bool PluginHandler::exposeIPlugin(IPlugin* p)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	if(myPluginAPI!=0 || p==0) return false;
-	myPluginAPI = p;
-	pluginAPIExposed = true;
+	if(myIPlugin!=0 || p==0) return false;
+	myIPlugin = p;
+	IPluginExposed = true;
 	return true;
 }
-int PluginHandler::hidePluginAPI()
+int PluginHandler::hideIPlugin()
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	pluginAPIExposed = false;
+	IPluginExposed = false;
 	int users = 0;
-	for(PluginAPIUserMap::iterator iter = pluginAPIUserMap.begin();iter!=pluginAPIUserMap.end();++iter)
+	for(IPluginUserMap::iterator iter = m_IPluginUserMap.begin();iter!=m_IPluginUserMap.end();++iter)
 	{
 		users = users+iter->second;
 	}
-	if(users==0) myPluginAPI=0;
+	if(users==0) myIPlugin=0;
 	return users;
 }
-PluginAPI* PluginHandler::getPluginAPIBinding(std::string id)
+IPlugin* PluginHandler::getIPluginBinding(std::string id)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	if(pluginAPIExposed==false || myPluginAPI==0)return 0;
-	if(pluginAPIUserMap.count(id)>0)
+	if(IPluginExposed==false || myIPlugin==0)return 0;
+	if(m_IPluginUserMap.count(id)>0)
 	{
-		pluginAPIUserMap[id]++;
+		m_IPluginUserMap[id]++;
 	}
 	else
 	{
-		pluginAPIUserMap[id]=1;
+		m_IPluginUserMap[id]=1;
 	}
-	return myPluginAPI;
+	return myIPlugin;
 }
-void PluginHandler::cancelPluginAPIBinding(std::string id)
+void PluginHandler::cancelIPluginBinding(std::string id)
 {
 	OpenThreads::ScopedLock<OpenThreads::Mutex> lock(myMutex);
-	if(pluginAPIUserMap.count(id)==0) return;
+	if(m_IPluginUserMap.count(id)==0) return;
 	
-	PluginAPIUserMap::iterator iter = pluginAPIUserMap.find(id);
+	IPluginUserMap::iterator iter = m_IPluginUserMap.find(id);
 	if(iter->second > 1) iter->second = iter->second - 1;
-	else pluginAPIUserMap.erase(iter);	
+	else m_IPluginUserMap.erase(iter);	
 
-	if(pluginAPIExposed==false && pluginAPIUserMap.size()==0)//map is empty, can set pointer to 0
+	if(IPluginExposed==false && m_IPluginUserMap.size()==0)//map is empty, can set pointer to 0
 	{
-		myPluginAPI = 0;
+		myIPlugin = 0;
 	}
 }
 int PluginHandler::getNumExposedUIs(){return (int) myUIs.size();}

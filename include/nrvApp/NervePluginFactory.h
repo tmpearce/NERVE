@@ -7,7 +7,6 @@ class NerveAPI;
 class NervePluginFactory
 {
 public:
-	static int getNerveVersion();
 	virtual NervePluginBase*	createPluginObject() = 0;
 	virtual void				cleanUpPluginObject(NervePluginBase*,NerveAPI*) = 0;
 	virtual const char*			getName() = 0;

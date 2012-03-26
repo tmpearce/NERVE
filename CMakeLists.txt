@@ -111,7 +111,7 @@ target_link_libraries(NerveApp winmm)
 add_definitions(-D_UNICODE 
 		-DBUILD_NERVEAPPLICATION_LIBRARY
 		-DBUILD_NERVETASK_LEGACY_LIBRARY
-		-DNERVE_VERSION=2
+		-DNERVE_VERSION=3
 		)
 #set compiler flags
 set_target_properties(NerveApp

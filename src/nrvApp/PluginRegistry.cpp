@@ -1,5 +1,6 @@
 #include "nrvApp\PluginRegistry.h"
 #include "nrvApp\NervePluginFactory.h"
+#include "nrvApp/NervePluginBase.h"
 #include <QtCore/QString>
 #include <sstream>
 #include "winbase.h"
@@ -70,6 +71,7 @@ std::vector<std::wstring>FindDirectories(std::wstring directory)
 	return dirs;
 }
 typedef void (__cdecl *PLUGIN_DLL_FUNC)(PluginRegistry*);
+typedef int (__cdecl *PLUGIN_VERSION_INFO)();
 
 void loadPlugin(std::wstring filename, std::wstring dir, 
 				 std::list<PluginInfo> &pluginInfoList,
@@ -88,7 +90,24 @@ void loadPlugin(std::wstring filename, std::wstring dir,
 	else
 	{	
 		//wprintf(TEXT("Loaded %s\n"),file.c_str());
-		PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, LPCSTR("RegisterNervePlugin"));
+		PLUGIN_VERSION_INFO version = (PLUGIN_VERSION_INFO)GetProcAddress(hinst,"CompatibleNerveVersion");
+		PLUGIN_DLL_FUNC registerPlugin = (PLUGIN_DLL_FUNC)GetProcAddress(hinst, "RegisterNervePlugin");
+		if(version)
+		{
+			int v = version();
+			if(v!=EXPECTED_VERSION)
+			{
+				wprintf(TEXT("%s found, but plugin version (%i) doesn't match the expected version for this application (%i). Please rebuild.\n"),
+					     file.c_str(),v,EXPECTED_VERSION);
+				FreeLibrary(hinst);
+				return;
+			}
+		}
+		else
+		{
+			FreeLibrary(hinst);
+			return;
+		}
 		if(registerPlugin)
 		{
 			QString tempstr = QString::fromStdWString(file);

@@ -49,7 +49,7 @@ void NerveApplication::launch()
 	gui->move(300,50);
 	gui->setVisible(true);
 
-
+	qtimer.start();
 	//control stops at app->exe() until QApplication returns
 	app->exec();
 	Sleep(10);

@@ -23,8 +23,7 @@ the GraphicsWindowManager class).
 #include "nrvApp\PluginHandler.h"
 #include "nrvApp\ServiceRepository.h"
 #include "nrv\EventObserver.h"
-//#include "nrvApp/NerveAPI.h"
-
+#include <QElapsedTimer>
 class GeneralGui;
 class QApplication;
 class ServiceBinding;
@@ -142,6 +141,7 @@ public:
 	bool isQObjectInQApplicationThread(QObject* o);
 
 	//API access functions
+	long long int getTime(){OpenThreads::ScopedLock<OpenThreads::Mutex> lock(timerMutex); return qtimer.elapsed();}
 	void handlerExposeUserInterface(QWidget* ui, std::string id, std::string title="untitled"){UIAvailable.broadcast(UIInfo(ui,id,title));}
 	void handlerHideUserInterface(QWidget* ui, std::string id, std::string title="untitled"){UIRemoved.broadcast(UIInfo(ui,id,title));}
 	void handlerAcceptOrphanUI(QWidget* ui,std::string id){printf("Warning: Qt User Interface orphaned by plugin %s - cleanup protocol unknown\n",id);}
@@ -245,6 +245,8 @@ protected:
 	QApplication* app;
 
 	OpenThreads::Mutex myMutex;
+	OpenThreads::Mutex timerMutex;
+	QElapsedTimer qtimer;
 
 };
 

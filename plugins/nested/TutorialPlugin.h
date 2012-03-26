@@ -11,7 +11,11 @@ public:
 		CREATE_GUI,
 		DESTROY_GUI
 	};
-	TutorialPlugin(NerveAPI* n):ownershipOfChildPlugins(false),handleChildUIs(false)
+	TutorialPlugin():ownershipOfChildPlugins(false),handleChildUIs(false)
+	{
+		
+	}
+	void init(NerveAPI* n)
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);

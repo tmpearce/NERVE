@@ -3,10 +3,11 @@
 #include "nrvApp/NerveAPI.h"
 #include "nrvApp/NervePluginFactory.h"
 #include "nrvApp/NervePluginBase.h"
-#include "osgwindow_plugin.h"
+#include "osgwindow_interface.h"
 
 //files from this project
 #include "GuiHeader.h"
+#include "SceneElements.h"
 M_MAKE_PLUGIN(TutorialPluginFactory)
 
 class TutorialPlugin : public NervePluginBase
@@ -17,14 +18,24 @@ public:
 		CREATE_GUI,
 		DESTROY_GUI
 	};
-	TutorialPlugin(NerveAPI* n)
+	void init(NerveAPI* n)
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		printf("Creating mobile element\n");
+		MobileElement* me = new MobileElement();
+		printf("Destroying mobile element\n");
+		delete me;
 	}
 	~TutorialPlugin()
 	{
+		if(iWindow)
+		{
+			mpAPI->unbindIPlugin(iWindow);
+		}
+		mpAPI->cancelChildPlugin(window_plugin);
 		mpAPI->callPluginFromMainThread(this,DESTROY_GUI,NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		printf("after blocking callback in window user dtor\n");
 	}
 	void callbackFromMainApplicationThread(int call_id)
 	{
@@ -41,6 +52,8 @@ public:
 private:
 	NerveAPI* mpAPI;
 	TutorialGui* gui;
+	IOSGWindow* iWindow;
+	std::string window_plugin;
 
 	void createGui()
 	{
@@ -48,9 +61,17 @@ private:
 		mpAPI->exposeUI(gui);
 		mpAPI->setTakeOwnershipOfCreatedPlugins(true);
 		mpAPI->setWillAcceptChildUIs(true);
-		std::string window_plugin = mpAPI->createPlugin("OSG Window <osgwindow.dll>");
-		//mpAPI->get
-		//printf("trying to create osgwindow: %s\n",mpAPI->createPlugin("OSG Window <osgwindow.dll>").c_str());
+		window_plugin = mpAPI->createPlugin("OSG Window <osgwindow.dll>");
+		IPlugin* ip = mpAPI->bindIPlugin(window_plugin);
+		iWindow = dynamic_cast<IOSGWindow*>(ip);
+		if(iWindow)
+		{
+			printf("successfully cast IPlugin* to IOSGWindow*\n");
+		}
+		else
+		{
+			printf("failed to cast IPlugin* to IOSGWindow*\n");
+		}
 	}
 	void destroyGui()
 	{
@@ -63,9 +84,9 @@ void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * 
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new TutorialPlugin(n);
+	return new TutorialPlugin();
 }
 
 

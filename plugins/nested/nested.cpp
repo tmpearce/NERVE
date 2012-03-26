@@ -14,9 +14,9 @@ void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * 
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new TutorialPlugin(n);
+	return new TutorialPlugin();
 }
 const char* TutorialPluginFactory::getName()
 {

@@ -3,6 +3,7 @@
 #include "nrvApp/NerveAPI.h"
 #include "osgwindow_guts.h"
 #include "GuiHeader.h"
+#include "osgwindow_interface.h"
 
 class Impl
 {
@@ -12,12 +13,13 @@ public:
 		CREATE_GUI,
 		DESTROY_GUI
 	};
-	Impl():pluginObj(0),mpAPI(0),gui(0){}
+	Impl():pluginObj(0),mpAPI(0),gui(0),iWindow(&window){}
 	void init(osgwindow* plugin, NerveAPI* n)
 	{
 		pluginObj = plugin;
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(pluginObj,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		mpAPI->exposeIPlugin(&iWindow);
 	}
 	~Impl()
 	{
@@ -36,11 +38,12 @@ private:
 	osgwindow* pluginObj;
 	osgwindowGui* gui;
 	Window window;
+	IOSGWindow iWindow;
 
 	void createGui()
 	{
 		gui=new osgwindowGui(&window);
-		mpAPI->exposeUI(gui);printf("Impl createGui 3\n");
+		mpAPI->exposeUI(gui);
 	}	
 	void destroyGui()
 	{
