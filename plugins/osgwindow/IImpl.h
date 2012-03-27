@@ -1,5 +1,6 @@
 #pragma once
 #include "osgwindow_guts.h"
+#include "osgwindow_interface.h"
 
 class IImpl
 {
@@ -15,6 +16,9 @@ public:
 	void setUseStereoMode(bool b){params.stereo = b;}
 	void setCameraMode(int i){params.camManipOption = i;}
 	void applyChanges(){window->configure(params);}
+	void initWindowEvents(){window->initWindowEvents();}
+
+	IOSGWindow::Position getMousePosition(){return window->getMousePosition();}
 private:
 	Window* window;
 	WindowParams params;

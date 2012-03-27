@@ -1,5 +1,10 @@
 #pragma once
 #include "nrvApp/NerveAPI.h"
+#ifdef IOSGWINDOW_EXPORT
+#define IOSGWINDOW __declspec(dllexport)
+#else
+#define IOSGWINDOW __declspec(dllimport)
+#endif
 class Window;
 class IImpl;
 namespace osg{
@@ -7,7 +12,7 @@ namespace osg{
 	class NodeCallback;
 }
 
-class IOSGWindow : public IPlugin
+class IOSGWINDOW IOSGWindow : public IPlugin
 {
 public:
 	void setScene(osg::Group*);
@@ -20,6 +25,10 @@ public:
 	void setUseStereoMode(bool b);
 	void setCameraMode(int i);
 	void applyChanges();
+	void initWindowEvents();
+
+	typedef std::pair<float,float> Position;
+	Position getMousePosition();
 private:
 	friend class Impl;
 	IImpl* pIImpl;

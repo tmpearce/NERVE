@@ -6,10 +6,13 @@ PROJECT(${PLUGIN_FILENAME})
 set(SRCFILES
 	${PLUGIN_FILENAME}.cpp
 	${PLUGIN_FILENAME}.ui
+	GuiImpl.cpp
 	)
 set(HDRFILES
+	plugin.h
 	GuiHeader.h
 	SceneElements.h
+	Centerout.h
 	)
 set(FILES_TO_UIC
 	${PLUGIN_FILENAME}.ui

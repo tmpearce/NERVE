@@ -1,11 +1,14 @@
 #pragma once
 #include <osg/MatrixTransform>
+#include <osg/Switch>
+#include <osg/Camera>
 #include <osg/NodeCallback>
 #include <osg/Geode>
 #include <osg/ShapeDrawable>
 #include <osg/CullFace>
 #include <osg/Vec3>
 #include <osg/Quat>
+#include <osg/Material>
 #include "nrvToolbox/TriBuf.h"
 
 struct MobileInfo
@@ -13,42 +16,134 @@ struct MobileInfo
 	osg::Matrix matrix;
 	osg::Vec4 color;
 	float transparency;
+	bool operator==(const MobileInfo& rhs){return matrix==rhs.matrix && color==rhs.color && transparency==rhs.transparency;}
+	bool operator!=(const MobileInfo& rhs){return !(operator==(rhs));}
+};
+class CameraCallback : public osg::NodeCallback
+{
+public:
+	CameraCallback(){}
+	~CameraCallback(){}
+	void operator()(osg::Node* n, osg::NodeCallback* nc)
+	{
+		osg::Matrix temp = buffer.getData();
+		if(temp != viewMatrix)
+		{
+			osg::Camera* c = static_cast<osg::Camera*>(n);
+			viewMatrix = temp;
+			c->setViewMatrix(viewMatrix);
+		}
+	}
+	void setViewMatrix(osg::Matrix m)
+	{
+		buffer.setData(m);
+	}
+private:
+	TriBuf<osg::Matrix> buffer;
+	osg::Matrix viewMatrix;
 };
 class MobileCallback : public osg::NodeCallback
 {
 public:
-	MobileCallback(){}
+	MobileCallback(){material = new osg::Material();}
 	~MobileCallback(){}
 	void operator()(osg::Node* n, osg::NodeCallback* nc)
 	{
-		osg::MatrixTransform* m = static_cast<osg::MatrixTransform*>(n);
+		MobileInfo temp = infoBuffer.getData();
+		if(temp != settings)
+		{
+			settings = temp;
+			osg::MatrixTransform* m = static_cast<osg::MatrixTransform*>(n);
+			m->setMatrix(settings.matrix);
+			
+			material->setDiffuse(osg::Material::FRONT_AND_BACK, settings.color);
+			material->setTransparency(osg::Material::FRONT_AND_BACK, settings.transparency);
+			if(settings.transparency==0.0) 
+			{
+				m->getOrCreateStateSet()->setRenderingHint(osg::StateSet::OPAQUE_BIN);
+				m->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::OFF);
+			}
+			else
+			{
+				m->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);			
+				m->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+			}
+			m->getOrCreateStateSet()->setAttribute(material);
+		
+		}
 	}
 	TriBuf<MobileInfo>* getInfoBufferPtr(){return &infoBuffer;}
 private:
 	TriBuf<MobileInfo> infoBuffer;
+	MobileInfo settings;
+	osg::ref_ptr<osg::Material> material;
 };
-
-class GroupElement
+class SwitchCallback : public osg::NodeCallback
+{
+public:
+	SwitchCallback(){}
+	~SwitchCallback(){}
+	void operator()(osg::Node* n, osg::NodeCallback* nc)
+	{
+		osg::Switch* s = static_cast<osg::Switch*>(n);
+		if(atomic==1)s->setAllChildrenOn();
+		else s->setAllChildrenOff();
+	}
+	void enable(bool b)
+	{
+		b ? atomic.exchange(1) : atomic.exchange(0);
+	}
+private:
+	OpenThreads::Atomic atomic;
+};
+class SceneElement : public osg::Referenced
+{
+public:
+	SceneElement* getParent(int i=0)
+	{
+		if(parents.size()<(i+1)) return 0;
+		return parents[i];
+	}
+	virtual osg::Node* getNodePtr(){return osgNode.get();}
+	void addParent(SceneElement* parent){parents.push_back(parent);}
+	virtual ~SceneElement(){}
+protected:
+	std::vector<SceneElement*> parents;
+private:
+	osg::ref_ptr<osg::Node> osgNode;
+};
+class GroupElement : public SceneElement
 {
 public:
 	GroupElement()
 	{
 		osgNode = new osg::Group();
 	}
-	void addChild(osg::Node* child){osgNode->addChild(child);}
-	osg::Group* getNodePtr(){return osgNode;}
+	virtual void addChild(SceneElement* child)
+	{
+		children.push_back(child);
+		child->addParent(this);
+		osgNode->addChild(child->getNodePtr());		
+	}
+	virtual osg::Group* getNodePtr(){return osgNode.get();}
+protected:
+	std::vector<SceneElement*> children;
 private:
-	osg::ref_ptr<osg::Group> osgNode;
+	osg::ref_ptr<osg::Group> osgNode;	
 };
 class MobileElement : public GroupElement
 {
 public:
 	MobileElement()
 	{
+		switchNode = new osg::Switch();
+		switchCallback = new SwitchCallback();
+		switchNode->setUpdateCallback(switchCallback);
 		osgNode = new osg::MatrixTransform();
 		MobileCallback* mc = new MobileCallback();//pointer managed by osg::ref_ptr
 		osgNode->setUpdateCallback(mc);
 		infoBuffer = mc->getInfoBufferPtr();
+		switchNode->addChild(osgNode);
 
 		geodeCullFrontFace = new osg::Geode();
 		geodeCullBackFace = new osg::Geode();
@@ -74,12 +169,22 @@ public:
 	void setColor(osg::Vec4 color){ myInfo.color = color;updateInfo();}
 	void setColor(float r, float g, float b){ myInfo.color = osg::Vec4(r, g, b, 0.0); }
 	void setTransparency(float transparency) { myInfo.transparency = transparency;updateInfo();}
+	void setEnabled(bool on){switchCallback->enable(on);}
 	void addDrawable(osg::Drawable* drawable)
 	{
 		geodeCullFrontFace->addDrawable(drawable);
 		geodeCullBackFace->addDrawable(drawable);
 	}
+	virtual osg::Switch* getNodePtr(){return switchNode.get();}
+	void addChild(SceneElement* child)
+	{
+		children.push_back(child);
+		child->addParent(this);
+		osgNode->addChild(child->getNodePtr());		
+	}
 private:
+	osg::ref_ptr<osg::Switch> switchNode;
+	osg::ref_ptr<SwitchCallback> switchCallback;
 	osg::ref_ptr<osg::MatrixTransform> osgNode;
 	osg::ref_ptr<osg::Geode> geodeCullFrontFace;
 	osg::ref_ptr<osg::Geode> geodeCullBackFace;
@@ -102,4 +207,8 @@ class SphereElement : public MobileElement
 {
 public:
 	SphereElement(){addDrawable(new osg::ShapeDrawable(new osg::Sphere()));}
+	float getRadius(){return r_;}
+	void setRadius(float r){r_=r; setScale(r_,r_,r_);}
+private:
+	float r_;
 };

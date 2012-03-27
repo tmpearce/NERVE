@@ -19,7 +19,7 @@ class PluginRegistry;
 class NervePluginFactory;
 class NervePluginBase;
 
-class IPlugin
+class NERVEPLUGIN IPlugin
 {
 public:
 	virtual ~IPlugin(){}

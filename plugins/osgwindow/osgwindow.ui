@@ -6,250 +6,268 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>219</width>
-    <height>314</height>
+    <width>221</width>
+    <height>351</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>221</width>
+    <height>351</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>6</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Plugin: osgwindow</string>
-   </property>
-  </widget>
-  <widget class="QFrame" name="frame">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>80</y>
-     <width>191</width>
-     <height>231</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Config options:</string>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>30</y>
-      <width>161</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QCheckBox" name="fullscreen">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>0</y>
-       <width>71</width>
-       <height>17</height>
-      </rect>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QFrame" name="frame_4">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="text">
-      <string>Fullscreen</string>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
+     <widget class="QFrame" name="frame_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>195</width>
+        <height>48</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>5</y>
+         <width>46</width>
+         <height>13</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Status:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="loadButton">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>20</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load model</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>88</width>
+        <height>13</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Plugin: osgwindow</string>
+      </property>
+     </widget>
+     <widget class="QFrame" name="frame">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>90</y>
+        <width>195</width>
+        <height>233</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Config options:</string>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frame_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>161</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QCheckBox" name="fullscreen">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>0</y>
+          <width>71</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fullscreen</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="windowed">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>71</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Windowed</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QSpinBox" name="screenNum">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>57</y>
+         <width>31</width>
+         <height>22</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>25</x>
+         <y>60</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Screen number:</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="mirrored">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>70</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Mirrored</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="stereo">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>100</y>
+         <width>70</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Stereo</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="applyButton">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>200</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Apply</string>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="frameRate">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>120</y>
+         <width>62</width>
+         <height>22</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>123</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Max frame rate:</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="cameraManipulation">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>170</y>
+         <width>161</width>
+         <height>22</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>150</y>
+         <width>111</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Camera manipulation:</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
-    <widget class="QCheckBox" name="windowed">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>71</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Windowed</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QSpinBox" name="screenNum">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>57</y>
-      <width>31</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>25</x>
-      <y>60</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Screen number:</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="mirrored">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>70</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Mirrored</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="stereo">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>100</y>
-      <width>70</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Stereo</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="applyButton">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>200</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Apply</string>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="frameRate">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>120</y>
-      <width>62</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>123</y>
-      <width>81</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Max frame rate:</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cameraManipulation">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>170</y>
-      <width>161</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_6">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>150</y>
-      <width>111</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Camera manipulation:</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QFrame" name="frame_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>191</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>5</y>
-      <width>46</width>
-      <height>13</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Status:</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="loadButton">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>20</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Load model</string>
-    </property>
-   </widget>
-  </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

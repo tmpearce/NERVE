@@ -19,11 +19,26 @@
 #include <osg/DisplaySettings>
 #include <osgGA/TrackballManipulator>
 #include <osgGA/FirstPersonManipulator>
+#include <osgGA/GUIEventHandler>
 #include <osgDB/ReadFile>
 #include "C:/osgBullet/include/osgbInteraction/HandNode.h"
 #include <string>
+#include "nrvToolbox/TriBuf.h"
 
 typedef OpenThreads::ScopedLock<OpenThreads::Mutex> Lock;
+
+class CustomEventHandler : public osgGA::GUIEventHandler{
+public:
+	typedef std::pair<float,float> Position;
+	Position getMouseXY(){return buffer.getData();}
+	bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
+	{
+		buffer.setData(Position(ea.getXnormalized(),ea.getYnormalized()));
+		return false;
+	}
+private:
+	TriBuf<Position> buffer;
+};
 
 struct WindowParams{
 	bool windowed;
@@ -65,6 +80,8 @@ public:
 		h->setAll(params);
 		
 		viewer.getCamera()->setViewMatrixAsLookAt(osg::Vec3(0.,-10.,3.),osg::Vec3(0.,0.,0.),osg::Vec3(0.,0.,1.));
+
+		
 	}
 	~ViewerModule(){printf("ViewerModule dtor\n");}
 	void moduleOperation(NerveModuleUser*)
@@ -76,6 +93,7 @@ public:
 	}
 private:
 	osgViewer::Viewer viewer;
+	osg::ref_ptr<CustomEventHandler> windowEvents;
 	osg::ref_ptr<osg::Group> sceneData;
 	osg::ref_ptr<osg::DisplaySettings> displaySettings;
 	osg::ref_ptr<osg::NodeCallback> cameraCallback;
@@ -88,6 +106,7 @@ private:
 	friend class ViewerParamModule;
 	friend class ViewerSceneModule;
 	friend class ViewerCamCallbackModule;
+	friend class EventHandlerModule;
 
 	void setSceneData(osg::Group* sd)
 	{
@@ -107,6 +126,12 @@ private:
 		}
 	}
 
+	CustomEventHandler* initEventHandling()
+	{
+		windowEvents = new CustomEventHandler();
+		viewer.addEventHandler(windowEvents);
+		return windowEvents.get();
+	}
 };
 
 class ViewerParamModule : public NerveModule
@@ -131,7 +156,7 @@ public:
 			vmod->viewer.getCamera()->getDisplaySettings()->setStereo(stereo);
 			if(stereo)
 			{
-				vmod->viewer.getCamera()->getDisplaySettings()->setStereoMode(osg::DisplaySettings::VERTICAL_SPLIT);
+				vmod->viewer.getCamera()->getDisplaySettings()->setStereoMode(osg::DisplaySettings::HORIZONTAL_SPLIT);
 			}
 		}
 		if(bsetup)
@@ -209,6 +234,22 @@ private:
 	friend class ViewerUpdater;
 
 };
+class EventHandlerModule : public NerveModule
+{
+public:
+	void moduleOperation(NerveModuleUser*)
+	{
+		*ptr_to_set = vmod->initEventHandling();
+		pause->unpause();
+	}
+private:
+	EventHandlerModule(ViewerModule& v, Pause& p, CustomEventHandler** ptr):vmod(&v),pause(&p),ptr_to_set(ptr){}
+	ViewerModule* vmod;
+	Pause* pause;
+	CustomEventHandler** ptr_to_set;
+	friend class ViewerUpdater;
+
+};
 class ViewerUpdater
 {
 public:
@@ -241,6 +282,15 @@ public:
 		p.pause();
 	}
 
+	static void initEventHandling(ViewerModule& v, NerveThread& t, CustomEventHandler** eh)
+	{
+		Pause p;
+		EventHandlerModule m(v,p,eh);
+		m.setOperateAction(NerveModule::REMOVE_MODULE_AFTER_OPERATING);
+		m.setRemoveAction(NerveModule::DONT_DELETE_MODULE);
+		t.addModule(m);
+		p.pause();
+	}
 	void updateParams(NerveThread& viewerThread)
 	{
 		viewerThread.addModule(vmod);
@@ -253,7 +303,7 @@ private:
 class Window
 {
 public:
-	Window():sceneRoot(0),camCallback(0)
+	Window():sceneRoot(0),camCallback(0),windowEvents(0)
 	{
 		vm = new ViewerModule();
 		vm->setOperateAction(NerveModule::DONT_REMOVE_MODULE);
@@ -297,9 +347,16 @@ public:
 		update.updateParams(vt);
 		params = wp;
 	}
+	void initWindowEvents(){ViewerUpdater::initEventHandling(*vm,vt,&windowEvents);}
+	std::pair<float,float> getMousePosition()
+	{
+		if(windowEvents) return windowEvents->getMouseXY();
+		else return std::pair<float,float>(0.,0.);
+	}
 private:
 	NerveThread vt;
 	ViewerModule * vm; 
+	CustomEventHandler* windowEvents;
 	WindowParams params;
 	osg::ref_ptr<osg::Group> sceneRoot;
 	osg::ref_ptr<osg::NodeCallback> camCallback;

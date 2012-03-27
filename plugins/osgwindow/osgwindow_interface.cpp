@@ -21,3 +21,5 @@ void IOSGWindow::setMaxFrameRate(float fr){pIImpl->setMaxFrameRate(fr);}
 void IOSGWindow::setUseStereoMode(bool b){pIImpl->setUseStereoMode(b);}
 void IOSGWindow::setCameraMode(int i){pIImpl->setCameraMode(i);}
 void IOSGWindow::applyChanges(){pIImpl->applyChanges();}
+void IOSGWindow::initWindowEvents(){pIImpl->initWindowEvents();}
+IOSGWindow::Position IOSGWindow::getMousePosition(){return pIImpl->getMousePosition();}
