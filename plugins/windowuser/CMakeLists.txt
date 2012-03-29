@@ -7,6 +7,7 @@ set(SRCFILES
 	${PLUGIN_FILENAME}.cpp
 	${PLUGIN_FILENAME}.ui
 	GuiImpl.cpp
+	CenterOut.cpp
 	)
 set(HDRFILES
 	plugin.h

@@ -2,8 +2,10 @@
 #include "nrvApp\NervePluginFactory.h"
 #include "nrvApp/NervePluginBase.h"
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <sstream>
 #include "winbase.h"
+#include "stdlib.h"
 
 std::vector<std::pair<std::wstring, std::wstring> >FindFiles(std::wstring directory, std::wstring templateString, bool recurse)
 {
@@ -70,6 +72,26 @@ std::vector<std::wstring>FindDirectories(std::wstring directory)
 
 	return dirs;
 }
+std::vector<std::wstring>GetPathDirectories()
+{
+	std::vector<std::wstring> dirs;
+	char* path = getenv("PATH");
+	if(path==0) printf("PluginRegistry.cpp: PATH environment variable not found\n");
+	else
+	{
+		QString fullpathenvvar(path);
+		QStringList pathcomponents = fullpathenvvar.split(";");
+		//printf("Number of directories on path: %i\n",pathcomponents.size());
+		for(int i=0;i<pathcomponents.size();++i)
+		{
+			QString dir = pathcomponents.at(i);
+			dir.replace("/","\\");
+			//wprintf(L"%s\n",dir.toStdWString().c_str());
+			dirs.push_back(dir.toStdWString());
+		}
+	}
+	return dirs;
+}
 typedef void (__cdecl *PLUGIN_DLL_FUNC)(PluginRegistry*);
 typedef int (__cdecl *PLUGIN_VERSION_INFO)();
 
@@ -81,7 +103,8 @@ void loadPlugin(std::wstring filename, std::wstring dir,
 	std::wstring file = dir+filename;
 	//wprintf(TEXT("%s\n"),file.c_str());
 	HINSTANCE hinst;
-	hinst=LoadLibraryEx(file.c_str(),0,0);
+	hinst=LoadLibraryEx(file.c_str(),0,0x00001000);
+	//hinst=LoadLibraryEx(file.c_str(),0,0);
 	
 	if(!hinst)
 	{
@@ -166,13 +189,16 @@ void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 		{
 			dlluserpath.push_back(QString::fromStdString(directory).toStdWString());
 		}
-		
+		std::vector<std::wstring> pathdirs =  GetPathDirectories();
+		dlluserpath.insert(dlluserpath.end(), pathdirs.begin(), pathdirs.end());
 		for(std::vector<std::wstring>::iterator it = dlluserpath.begin();it!=dlluserpath.end();++it)
 		{
-			AddDllDirectory((*it).c_str());
-				//((*it).c_str());
-			//if(ret==0) printf("Problem adding directory to dll search path\n");
+			if(AddDllDirectory((*it).c_str())==0) wprintf(L"Problem adding (%s) to dll search path\n",it->c_str());
+						
 		}
+		//For the future: this might be a good place to specify dll search options, rather than in LoadLibraryEx
+		//It would require GetProcAddress. The value 0x0000100 specifies LOAD_LIBRARY_SEARCH_DEFAULT_DIRS - see online docs
+		//SetDefaultDLLDirectories(0x00001000);
 	}
 	//find plugins
 	std::vector<std::pair<std::wstring,std::wstring> > files =
@@ -306,7 +332,7 @@ bool PluginInfo::loadLibrary(PluginRegistry* p)
 	if(!loaded)
 	{
 		QString filename(getFullPath().c_str());
-		hinst=LoadLibraryEx(filename.toStdWString().c_str(),0,0);
+		hinst=LoadLibraryEx(filename.toStdWString().c_str(),0,0x00001000);
 		
 		if(!hinst)
 		{

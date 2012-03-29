@@ -13,6 +13,7 @@
 
 struct MobileInfo
 {
+	MobileInfo():transparency(0.),color(.7f, .7f, .7f, 0.f),matrix(osg::Matrix::scale(1.f,1.f,1.f)){}
 	osg::Matrix matrix;
 	osg::Vec4 color;
 	float transparency;
@@ -24,7 +25,7 @@ class CameraCallback : public osg::NodeCallback
 public:
 	CameraCallback(){}
 	~CameraCallback(){}
-	void operator()(osg::Node* n, osg::NodeCallback* nc)
+	void operator()(osg::Node* n, osg::NodeVisitor* nv)
 	{
 		osg::Matrix temp = buffer.getData();
 		if(temp != viewMatrix)
@@ -33,6 +34,7 @@ public:
 			viewMatrix = temp;
 			c->setViewMatrix(viewMatrix);
 		}
+		traverse(n,nv);
 	}
 	void setViewMatrix(osg::Matrix m)
 	{
@@ -47,7 +49,7 @@ class MobileCallback : public osg::NodeCallback
 public:
 	MobileCallback(){material = new osg::Material();}
 	~MobileCallback(){}
-	void operator()(osg::Node* n, osg::NodeCallback* nc)
+	void operator()(osg::Node* n, osg::NodeVisitor* nv)
 	{
 		MobileInfo temp = infoBuffer.getData();
 		if(temp != settings)
@@ -71,6 +73,7 @@ public:
 			m->getOrCreateStateSet()->setAttribute(material);
 		
 		}
+		traverse(n,nv);
 	}
 	TriBuf<MobileInfo>* getInfoBufferPtr(){return &infoBuffer;}
 private:
@@ -83,11 +86,12 @@ class SwitchCallback : public osg::NodeCallback
 public:
 	SwitchCallback(){}
 	~SwitchCallback(){}
-	void operator()(osg::Node* n, osg::NodeCallback* nc)
+	void operator()(osg::Node* n, osg::NodeVisitor* nv)
 	{
 		osg::Switch* s = static_cast<osg::Switch*>(n);
 		if(atomic==1)s->setAllChildrenOn();
 		else s->setAllChildrenOff();
+		traverse(n,nv);
 	}
 	void enable(bool b)
 	{
@@ -156,6 +160,7 @@ public:
 		rot_ = osg::Quat(0.,osg::Vec3(0.,1.,0.));
 		trans_.set(0.,0.,0.);
 
+		switchNode->getOrCreateStateSet()->setDataVariance(osg::Object::DYNAMIC);
 		osgNode->getOrCreateStateSet()->setDataVariance(osg::Object::DYNAMIC);
 		osgNode->getOrCreateStateSet()->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
 		osgNode->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
@@ -167,7 +172,7 @@ public:
 	void setScale(double x, double y, double z){setScale(osg::Vec3(x,y,z));}
 	void setRotation(osg::Quat rot){rot_=rot;updateMatrix();updateInfo();}
 	void setColor(osg::Vec4 color){ myInfo.color = color;updateInfo();}
-	void setColor(float r, float g, float b){ myInfo.color = osg::Vec4(r, g, b, 0.0); }
+	void setColor(float r, float g, float b){ setColor(osg::Vec4(r,g,b,0.)); }
 	void setTransparency(float transparency) { myInfo.transparency = transparency;updateInfo();}
 	void setEnabled(bool on){switchCallback->enable(on);}
 	void addDrawable(osg::Drawable* drawable)
@@ -182,6 +187,8 @@ public:
 		child->addParent(this);
 		osgNode->addChild(child->getNodePtr());		
 	}
+
+	osg::Vec3 getTranslation(){return trans_;}
 private:
 	osg::ref_ptr<osg::Switch> switchNode;
 	osg::ref_ptr<SwitchCallback> switchCallback;
@@ -206,7 +213,7 @@ private:
 class SphereElement : public MobileElement
 {
 public:
-	SphereElement(){addDrawable(new osg::ShapeDrawable(new osg::Sphere()));}
+	SphereElement():MobileElement(),r_(1){addDrawable(new osg::ShapeDrawable(new osg::Sphere())); setRadius(r_);}
 	float getRadius(){return r_;}
 	void setRadius(float r){r_=r; setScale(r_,r_,r_);}
 private:

@@ -2,11 +2,34 @@
 #include "nrvApp/NerveAPI.h"
 #include "nrvApp/NervePluginBase.h"
 #include "osgwindow_interface.h"
+#include "nrvThread/NerveThread.h"
+#include "nrvThread/NerveModule.h"
 
 //files from this project
 #include "plugin.h"
 #include "GuiHeader.h"
 #include "CenterOut.h"
+
+
+class PositionModule : public NerveModule
+{
+public:
+	PositionModule(CenterOut* cenout, IOSGWindow* window, float scale):co(cenout),w(window),s(scale){}
+	void moduleOperation(NerveModuleUser*)
+	{
+		CenterOut::CursorPosition pos;
+		IOSGWindow::Position mpos = w->getMousePosition();
+		pos.x = mpos.first * s;
+		pos.y = 0.f;
+		pos.z = mpos.second * s;
+		co->setCursorPosition(pos);
+		OpenThreads::Thread::microSleep(1000);
+	}
+private:
+	CenterOut* co;
+	IOSGWindow* w;
+	float s;
+};
 
 class TutorialPlugin : public NervePluginBase
 {
@@ -20,9 +43,11 @@ public:
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		posThread.start();
 	}
 	~TutorialPlugin()
 	{
+		posThread.cancel();
 		if(iWindow)
 		{
 			mpAPI->unbindIPlugin(iWindow);
@@ -58,8 +83,15 @@ public:
 		}
 		iWindow->setScene(cenOut.getScene());
 		iWindow->setCameraCallback(cenOut.getCameraCallback());
+		iWindow->initWindowEvents();
+
+		PositionModule* m = new PositionModule(&cenOut, iWindow, 20.f);
+		m->setOperateAction(NerveModule::DONT_REMOVE_MODULE);
+		m->setRemoveAction(NerveModule::DELETE_MODULE);
+		posThread.addModule(*m);
 	}
 private:
+	NerveThread posThread;
 	NerveAPI* mpAPI;
 	TutorialGui* gui;
 	IOSGWindow* iWindow;

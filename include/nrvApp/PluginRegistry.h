@@ -69,7 +69,7 @@ private:
 	TaskRegistry taskRegistry;//backwards compatibility only
 	void discoverTasks();//backwards compatibility only
 
-	typedef void (__cdecl *ADDDLLDIRECTORY)(PCWSTR);
+	typedef int (__cdecl *ADDDLLDIRECTORY)(PCWSTR);
 	ADDDLLDIRECTORY AddDllDirectory;
 
 	friend class NerveApplication;
