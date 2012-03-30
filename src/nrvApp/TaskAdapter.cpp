@@ -1,4 +1,4 @@
-#include "TaskAdapter.h"
+#include "nrvApp/TaskAdapter.h"
 
 
 NervePluginBase* TaskAdapterFactory::createPluginObject(NerveAPI* appInterface)

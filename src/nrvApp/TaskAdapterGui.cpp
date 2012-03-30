@@ -1,7 +1,7 @@
-#include "TaskAdapterGui.h"
-#include "TaskAdapter.h"
-#include <QtCore\QTimer>
-#include <QtGui\QFileDialog>
+#include "nrvApp/TaskAdapterGui.h"
+#include "nrvApp/TaskAdapter.h"
+#include <QtCore/QTimer>
+#include <QtGui/QFileDialog>
 TaskAdapterGui::TaskAdapterGui()
 {
 	ui.setupUi(this);
