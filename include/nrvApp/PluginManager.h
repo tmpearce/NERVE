@@ -24,7 +24,7 @@ public:
 		return handler_id;
 	}
 	std::string destroyHandler(std::string handler_id)
-	{
+	{printf("PluginManager::destroy %s\n",handler_id.c_str());
 		HandlerMap::iterator iter = handlerMap.find(handler_id);
 		std::string plugin_id;
 		if(iter != handlerMap.end())
@@ -32,6 +32,7 @@ public:
 			plugin_id= iter->second->myPluginID;
 			delete (iter->second);
 			handlerMap.erase(iter);
+			printf("PluginManager::destroy: %i plugins remain in the map\n",handlerMap.size());
 		}
 		refreshRequired=true;
 		return plugin_id;
@@ -48,13 +49,21 @@ public:
 		HandlerMap::iterator iter = handlerMap.begin();
 		while(iter!=handlerMap.end())
 		{
-			destroyHandler(iter->first);
-			++iter;
+			if(iter->second->getMyOwnerPtr()!=0)
+			{
+				++iter;
+			}
+			else
+			{
+				destroyHandler(iter->first);
+				iter = handlerMap.begin();
+			}
 		}
 	}
 	~PluginManager()
 	{
 		clearAllPlugins();
+		printf("PluginManager dtor returning\n");
 	}
 protected:
 	HandlerMap handlerMap;

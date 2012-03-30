@@ -92,7 +92,8 @@ signals:
 	void uiAvailableSignalBlocking(const QString&,const QString&,QWidget*);
 	void uiRemovedSignalBlocking(const QString&,const QString&,QWidget*);
 public:
-	GeneralGui(NerveApplication* napp, QWidget * parent = 0);	
+	GeneralGui(NerveApplication* napp, QWidget * parent = 0);
+	~GeneralGui(){printf("GeneralGui dtor\n");}
 	PluginPathInfo getPluginPathInfo();
 	void pluginAvailable(std::string id){ emit pluginAvailableSignal(id.c_str()); }
 	void pluginUnavailable(std::string id){	emit pluginRemovedSignal(id.c_str()); }

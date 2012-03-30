@@ -54,6 +54,7 @@ void NerveApplication::launch()
 	app->exec();
 	Sleep(10);
 	pluginManager.clearAllPlugins();
+	delete gui;
 	delete app;
 	std::cout<<"Exiting NERVEApplication\n";
 	system("pause");

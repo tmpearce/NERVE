@@ -21,7 +21,7 @@
 #include <osgGA/FirstPersonManipulator>
 #include <osgGA/GUIEventHandler>
 #include <osgDB/ReadFile>
-#include "C:/osgBullet/include/osgbInteraction/HandNode.h"
+//#include "C:/osgBullet/include/osgbInteraction/HandNode.h"
 #include <string>
 #include "nrvToolbox/TriBuf.h"
 
@@ -66,7 +66,7 @@ public:
 		mirror->addChild(sceneData);
 		nomirror->addChild(sceneData);
 
-		osgbInteraction::HandNode* h = new osgbInteraction::HandNode(0);
+		/*osgbInteraction::HandNode* h = new osgbInteraction::HandNode(0);
 		sceneData->addChild(h);
 		
 		osgbInteraction::HandNode::AllParams params;
@@ -77,7 +77,7 @@ public:
 		params._spread34 = 3.14159/8;
 		params._finger2.set(3.14159/3,3.14159/3);
 		params._finger3.set(3.14159/3,3.14159/3);
-		h->setAll(params);
+		h->setAll(params);*/
 		
 		viewer.getCamera()->setViewMatrixAsLookAt(osg::Vec3(0.,-10.,3.),osg::Vec3(0.,0.,0.),osg::Vec3(0.,0.,1.));
 

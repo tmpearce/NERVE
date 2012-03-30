@@ -22,7 +22,8 @@ set(SRCFILES
 	./src/nrvApp/TaskAdapter.cpp
 	./src/nrvApp/TaskAdapterGui.cpp
 	./src/nrvApp/TaskRegistry.cpp
-	./src/nrvAPp/NervePluginFactory.cpp
+	./src/nrvApp/NervePluginFactory.cpp
+	./src/nrvExe/NerveApp.cpp
 	#################.ui files
 	./src/nrvApp/GeneralGui.ui
 	./src/nrvApp/SettingsEditor.ui
@@ -53,6 +54,7 @@ set(HDRFILES
 	./include/nrvApp/TaskAdapterGui.h
 	./include/nrvApp/TaskRegistry.h
 	./include/nrvExe/Task.h
+	./include/nrvExe/NerveApp.h
 	./include/nrvService/NerveService.h
 	./include/nrvService/InvokeMapper.h
 	./include/nrvService/Invoker.h

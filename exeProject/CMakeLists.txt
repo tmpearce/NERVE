@@ -11,6 +11,7 @@ include_directories(../include)
 
 find_package(OpenSceneGraph)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIR})
+add_definitions(-DUNICODE)
 
 add_executable(${APPLICATION_NAME} ${SRCFILES})
 target_link_libraries(${APPLICATION_NAME} NerveApp)

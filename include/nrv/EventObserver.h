@@ -43,6 +43,7 @@ public:
 		return _o != 0;
 	}
 	signal1_threadsafe<T>* getSignal(){return &_signal;}
+	~Event(){/*printf("Event<%s> dtor\n",typeid(T).name());*/}
 private:
 	signal1_threadsafe<T> _signal;
 };

@@ -28,7 +28,7 @@ public:
 	void operator()(osg::Node* n, osg::NodeVisitor* nv)
 	{
 		osg::Matrix temp = buffer.getData();
-		if(temp != viewMatrix)
+		//if(temp != viewMatrix)
 		{
 			osg::Camera* c = static_cast<osg::Camera*>(n);
 			viewMatrix = temp;

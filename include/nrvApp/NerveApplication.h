@@ -11,11 +11,7 @@ the GraphicsWindowManager class).
 */
 #pragma once
 
-#ifdef BUILD_NERVEAPPLICATION_LIBRARY
-#define NERVEAPPLICATION __declspec(dllexport)
-#else
-#define NERVEAPPLICATION __declspec(dllimport)
-#endif
+
 
 #include "nrvApp\PluginRegistry.h"
 #include "nrvApp\ServiceRegistry.h"
@@ -53,11 +49,13 @@ public:
 };
 class NerveApplication
 {
-public:
+private:
 	//Executable-level functions
-	NERVEAPPLICATION NerveApplication();	
-	void NERVEAPPLICATION launch();
-	NERVEAPPLICATION ~NerveApplication(){}
+	NerveApplication();
+	void launch();
+	friend class NerveApp;
+public:
+	~NerveApplication(){printf("NerveApplication dtor\n");}
 
 	enum PLUGIN_OWNERSHIP
 	{

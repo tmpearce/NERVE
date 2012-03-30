@@ -44,6 +44,8 @@ public:
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
 		posThread.start();
+
+		createWindow();
 	}
 	~TutorialPlugin()
 	{
@@ -90,6 +92,7 @@ public:
 		m->setRemoveAction(NerveModule::DELETE_MODULE);
 		posThread.addModule(*m);
 	}
+	void startTask(){cenOut.start();}
 private:
 	NerveThread posThread;
 	NerveAPI* mpAPI;

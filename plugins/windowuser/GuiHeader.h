@@ -14,16 +14,14 @@ public:
 	TutorialGui(TutorialPlugin* p):plugin(p)
 	{
 		ui.setupUi(this);
-		connect(ui.createWindow,SIGNAL(clicked()),this,SLOT(createWindow()));
-		//ui.tabWidget->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
 	}
 	void acceptChildUI(QWidget* child)
 	{
-		ui.tabWidget->addTab(child,"child ui");
-		ui.tabWidget->setFixedSize(ui.tabWidget->minimumSizeHint());
+		ui.viewerScrollArea->setWidget(child);
+		//ui.tabWidget->setFixedSize(ui.tabWidget->minimumSizeHint());
 	}
 public slots:
-	void createWindow();
+	void on_startButton_clicked();
 protected:
 	TutorialPlugin* plugin;
 	Ui::TutorialDialog ui;

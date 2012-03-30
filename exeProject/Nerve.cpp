@@ -1,8 +1,8 @@
-#include "nrvApp/NerveApplication.h"
+#include "nrvExe/NerveApp.h"
 
 int main()
 {
-	NerveApplication app;
+	NerveApp app;
 	app.launch();
 	return 0;
 }
