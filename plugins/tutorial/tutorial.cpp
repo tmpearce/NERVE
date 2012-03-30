@@ -8,7 +8,7 @@ M_MAKE_PLUGIN(TutorialPluginFactory)
 class TutorialPlugin : public NervePluginBase
 {
 public:
-	TutorialPlugin(NerveAPI* n){mpAPI = n;}
+	void init(NerveAPI* n){mpAPI = n;}
 private:
 	NerveAPI* mpAPI;
 };
@@ -17,9 +17,9 @@ void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * 
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new TutorialPlugin(n);
+	return new TutorialPlugin();
 }
 const char* TutorialPluginFactory::getName()
 {

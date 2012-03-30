@@ -11,7 +11,7 @@ class NerveThread : virtual public OpenThreads::Thread
 {
 public:
 	NerveThread(){}
-	virtual ~NerveThread(){}
+	virtual ~NerveThread(){if(isRunning()){cancel();} while(isRunning()){}}
 	virtual void cancelCleanup()//called on cancel() (by OpenThreads::Thread)
 	{
 		moduleUser.requestRemoveAllModules();

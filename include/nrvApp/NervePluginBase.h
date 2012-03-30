@@ -1,10 +1,14 @@
 #pragma once
 class QWidget;
+class NerveAPI;
+
+#define EXPECTED_VERSION 1
 
 class NervePluginBase
 {
 public:
 	virtual ~NervePluginBase(){}
+	virtual void init(NerveAPI* api) = 0;
 	virtual void calledInLoopDuringThreadedMode(){}
 	virtual void callbackFromMainApplicationThread(int call_id){}
 	virtual void acceptChildUI(QWidget* ui){}

@@ -24,7 +24,7 @@ protected:
 	~PluginHandler();
 
 	void callPluginFromMainThread(NervePluginBase* p, int call_id, NerveAPI::CALLBACK_REQUESTS_BLOCKING_STATUS status);
-	
+	long long int					getCurrentTime();
 	std::vector<std::string>		getLoadedPluginIDs();
 	std::vector<std::string>		getAvailableFactoryIDs();
 	void							setTakeOwnershipOfCreatedPlugins(bool takeOwnership);//false unless set to true
@@ -32,12 +32,12 @@ protected:
 	std::string						createPlugin(std::string factory_id);
 	void							cancelChildPlugin(std::string plugin_id);//null operation if this plugin doesn't own the other plugin
 	void							detachChildPlugin(std::string plugin_id);
-	PluginAPI*						bindPluginAPI(std::string plugin_id);
-	void							unbindPluginAPI(PluginAPI* p);
-	bool							exposePluginAPI(PluginAPI* p);
-	int								hidePluginAPI();
-	PluginAPI*						getPluginAPIBinding(std::string plugin_id);
-	void							cancelPluginAPIBinding(std::string plugin_id);
+	IPlugin*						bindIPlugin(std::string plugin_id);
+	void							unbindIPlugin(IPlugin* p);
+	bool							exposeIPlugin(IPlugin* p);
+	int								hideIPlugin();
+	IPlugin*						getIPluginBinding(std::string plugin_id);
+	void							cancelIPluginBinding(std::string plugin_id);
 	int								getNumExposedUIs();
 	QWidget*						exposeUI(QWidget* ui,std::string title);//returns pointer to ui
 	QWidget*						removeUI(QWidget* ui = 0);
@@ -89,12 +89,12 @@ protected:
 	ServiceBindingList		serviceConsumerBindings;
 	
 
-	PluginAPI*              myPluginAPI;
-	bool					pluginAPIExposed;
-	typedef std::map<std::string,int> PluginAPIUserMap;
-	PluginAPIUserMap pluginAPIUserMap;
-	typedef std::map<PluginAPI*, std::string> PluginAPIProviderMap;
-	PluginAPIProviderMap pluginAPIProviderMap;
+	IPlugin*              myIPlugin;
+	bool					IPluginExposed;
+	typedef std::map<std::string,int> IPluginUserMap;
+	IPluginUserMap m_IPluginUserMap;
+	typedef std::map<IPlugin*, std::string> IPluginProviderMap;
+	IPluginProviderMap m_IPluginProviderMap;
 
 	NerveAPI				myAPI;
 

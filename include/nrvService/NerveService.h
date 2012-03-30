@@ -147,7 +147,7 @@ public:
 
 	const std::string& getName() const {return _name;}
 	const std::string& getDescription() const {return _description;}
-	unsigned int getNumInvocables() const {return invocables.size();}
+	unsigned int getNumInvocables() const {return (unsigned int)invocables.size();}
 	bool isValid() const {return _valid;}
 	const InvocableInfo& getInvocable(unsigned int i) const
 	{

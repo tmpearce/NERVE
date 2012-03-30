@@ -11,11 +11,7 @@ the GraphicsWindowManager class).
 */
 #pragma once
 
-#ifdef BUILD_NERVEAPPLICATION_LIBRARY
-#define NERVEAPPLICATION __declspec(dllexport)
-#else
-#define NERVEAPPLICATION __declspec(dllimport)
-#endif
+
 
 #include "nrvApp\PluginRegistry.h"
 #include "nrvApp\ServiceRegistry.h"
@@ -23,8 +19,7 @@ the GraphicsWindowManager class).
 #include "nrvApp\PluginHandler.h"
 #include "nrvApp\ServiceRepository.h"
 #include "nrv\EventObserver.h"
-//#include "nrvApp/NerveAPI.h"
-
+#include <QElapsedTimer>
 class GeneralGui;
 class QApplication;
 class ServiceBinding;
@@ -48,30 +43,26 @@ public:
 };
 class PluginCreator : public QApplicationExecutor::Functionoid{
 public:
-	PluginCreator(PluginHandler*& hd, NerveApplication& app, NervePluginFactory& factory):a(app),f(factory),h(hd){}
+	PluginCreator(PluginHandler*& hd):h(hd){}
 	void operator()();
-	NerveApplication& a;
-	NervePluginFactory& f;
 	PluginHandler*& h;
 };
 class NerveApplication
 {
-public:
+private:
 	//Executable-level functions
-	NERVEAPPLICATION NerveApplication();	
-	void NERVEAPPLICATION launch();
-	NERVEAPPLICATION ~NerveApplication(){}
+	NerveApplication();
+	void launch();
+	friend class NerveApp;
+public:
+	~NerveApplication(){printf("NerveApplication dtor\n");}
 
 	enum PLUGIN_OWNERSHIP
 	{
 		PLUGIN_OWNED_BY_APPLICATION,
 		PLUGIN_OWNED_BY_PLUGIN
 	};
-	std::vector<std::string> refreshPlugins()
-	{
-		pluginRegistry.discoverPlugins();
-		return getAvailableFactoryIDs();
-	}
+	std::vector<std::string> refreshPlugins();
 	std::vector<std::string> getAvailableFactoryIDs()
 	{
 		return pluginRegistry.getPluginTypes();
@@ -84,22 +75,17 @@ public:
 	{
 		NervePluginFactory* factory = pluginRegistry.getFactory(factory_id);
 		if(factory==NULL) return std::string("Error creating plugin");
-		PluginHandler* handler=0;
-		PluginCreator pc(handler,*this,*factory);
-		postEventToQApplication(&pc,true);
-		if(handler==NULL) return std::string("Error creating plugin");
+		PluginHandler* handler=new PluginHandler(*this,*factory);
+		//PluginCreator pc(handler);
+		//postEventToQApplication(&pc,true);
+		//if(handler==NULL) return std::string("Error creating plugin");
+		if(creator==0){owner=PLUGIN_OWNED_BY_APPLICATION;}//should never happen but if it does make sure plugin can be cancelled from the application
+		if(owner==PLUGIN_OWNED_BY_PLUGIN) handler->setOwner(creator);
 		std::string id = pluginManager.addPluginHandler(*handler,factory_id);
 
-		if(creator==0){owner=PLUGIN_OWNED_BY_APPLICATION;}//should never happen but if it does make sure plugin can be cancelled from the application
-		switch(owner)
-		{
-		case PLUGIN_OWNED_BY_APPLICATION:
+		if(owner== PLUGIN_OWNED_BY_APPLICATION)
 			PluginAvailable.broadcast(id);
-			break;
-		case PLUGIN_OWNED_BY_PLUGIN:
-			handler->setOwner(creator);
-			break;
-		}
+			
 		
 		return id;
 	}
@@ -153,6 +139,7 @@ public:
 	bool isQObjectInQApplicationThread(QObject* o);
 
 	//API access functions
+	long long int getTime(){OpenThreads::ScopedLock<OpenThreads::Mutex> lock(timerMutex); return qtimer.elapsed();}
 	void handlerExposeUserInterface(QWidget* ui, std::string id, std::string title="untitled"){UIAvailable.broadcast(UIInfo(ui,id,title));}
 	void handlerHideUserInterface(QWidget* ui, std::string id, std::string title="untitled"){UIRemoved.broadcast(UIInfo(ui,id,title));}
 	void handlerAcceptOrphanUI(QWidget* ui,std::string id){printf("Warning: Qt User Interface orphaned by plugin %s - cleanup protocol unknown\n",id);}
@@ -256,6 +243,8 @@ protected:
 	QApplication* app;
 
 	OpenThreads::Mutex myMutex;
+	OpenThreads::Mutex timerMutex;
+	QElapsedTimer qtimer;
 
 };
 

@@ -1,10 +1,8 @@
 #include "nrvApp/TaskAdapter.h"
 
 
-NervePluginBase* TaskAdapterFactory::createPluginObject(NerveAPI* appInterface)
+NervePluginBase* TaskAdapterFactory::createPluginObject()
 {
-	TaskAdapter* taskAdapter = new TaskAdapter(this,appInterface);
-	appInterface->useThreadedMode();
+	return new TaskAdapter(this);
 
-	return taskAdapter;
 }

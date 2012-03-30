@@ -15,7 +15,7 @@ void NerveAPI::callPluginFromMainThread(NervePluginBase* p, int call_id, CALLBAC
 {
 	_d->callPluginFromMainThread(p, call_id,status);
 }
-
+long long int NerveAPI::getCurrentTime(){return _d->getCurrentTime();}
 std::vector<std::string> NerveAPI::getLoadedPluginIDs(){return _d->getLoadedPluginIDs();}
 std::vector<std::string> NerveAPI::getAvailableFactoryIDs(){return _d->getAvailableFactoryIDs();}
 void NerveAPI::setTakeOwnershipOfCreatedPlugins(bool takeOwnership){return _d->setTakeOwnershipOfCreatedPlugins(takeOwnership);}
@@ -23,10 +23,10 @@ void NerveAPI::setWillAcceptChildUIs(bool willAcceptUIs){return _d->setWillAccep
 std::string NerveAPI::createPlugin(std::string factory_id){return _d->createPlugin(factory_id);}
 void NerveAPI::cancelChildPlugin(std::string plugin_id){return _d->cancelChildPlugin(plugin_id);}
 void NerveAPI::detachChildPlugin(std::string plugin_id){return _d->detachChildPlugin(plugin_id);}
-PluginAPI* NerveAPI::bindPluginAPI(std::string plugin_id){return _d->bindPluginAPI(plugin_id);}
-void NerveAPI::unbindPluginAPI(PluginAPI* p){return _d->unbindPluginAPI(p);}
-bool NerveAPI::exposePluginAPI(PluginAPI* p){return _d->exposePluginAPI(p);}
-int NerveAPI::hidePluginAPI(){return _d->hidePluginAPI();}
+IPlugin* NerveAPI::bindIPlugin(std::string plugin_id){return _d->bindIPlugin(plugin_id);}
+void NerveAPI::unbindIPlugin(IPlugin* p){return _d->unbindIPlugin(p);}
+bool NerveAPI::exposeIPlugin(IPlugin* p){return _d->exposeIPlugin(p);}
+int NerveAPI::hideIPlugin(){return _d->hideIPlugin();}
 int NerveAPI::getNumExposedUIs(){return _d->getNumExposedUIs();}
 QWidget* NerveAPI::exposeUI(QWidget* ui,std::string title){return _d->exposeUI(ui,title);}
 QWidget* NerveAPI::removeUI(QWidget* ui){return _d->removeUI(ui);}

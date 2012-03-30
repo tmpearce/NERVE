@@ -13,20 +13,24 @@ class TutorialPlugin : public NervePluginBase
 public:
 	enum CallbackID
 	{
-		CREATE_GUI
+		CREATE_GUI,
+		DESTROY_GUI
 	};
-	TutorialPlugin(NerveAPI* n)
+	void init(NerveAPI* n)
 	{
 		mpAPI = n;
-		printf("pointer copied\n");
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+	}
+	~TutorialPlugin()
+	{
+		mpAPI->callPluginFromMainThread(this,DESTROY_GUI,NerveAPI::CALLBACK_REQUESTS_BLOCKING);
 	}
 	void callbackFromMainApplicationThread(int call_id)
 	{
-		printf("callback\n");
 		switch(call_id)
 		{
 		case CREATE_GUI: createGui(); break;
+		case DESTROY_GUI: destroyGui(); break;
 		}
 	}
 private:
@@ -38,16 +42,23 @@ private:
 		gui=new TutorialGui();
 		mpAPI->exposeUI(gui);
 	}
+	void destroyGui()
+	{
+		mpAPI->removeUI(gui);
+		delete gui;
+	}
 };
 
 void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * n)
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject(NerveAPI * n)
+NervePluginBase* TutorialPluginFactory::createPluginObject()
 {
-	return new TutorialPlugin(n);
+	return new TutorialPlugin();
 }
+
+
 const char* TutorialPluginFactory::getName()
 {
 	return "Tutorial Plugin";

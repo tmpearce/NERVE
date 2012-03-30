@@ -23,6 +23,7 @@ qAppThread(QApplication::instance()->thread())
 	appSettings = new QSettings("Moran Lab","NERVE");
 	settingsEditor = new SettingsEditor(appSettings, this);
 	settingsEditor->hide();
+	settingsEditor->loadSettings();
 
 	connect(timer,SIGNAL(timeout()),this,SLOT(update()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(quit()));
@@ -67,6 +68,7 @@ void GeneralGui::init()//called after plugins are detected
 		createPlugin(p);
 	}
 }
+GeneralGui::PluginPathInfo GeneralGui::getPluginPathInfo(){return settingsEditor->getPluginPathInfo();}
 /*******Slot definitions for GUI actions***********/
 void GeneralGui::quit()
 {
@@ -96,11 +98,11 @@ void GeneralGui::customResize()
 	printf("GeneralGui post size %i %i\n",size().width(),size().height());
 }
 void GeneralGui::createPlugin(QString id){nerveApp->createPlugin(id.toStdString(),NerveApplication::PLUGIN_OWNED_BY_APPLICATION);}
-void GeneralGui::addPlugin(QString id)
+void GeneralGui::addPlugin(QString id, bool onlyUI)
 {
 	if(pluginDockMap.count(id) == 0)//create a UIDock for this plugin
 	{
-		UIDock* dock = new UIDock(id);		
+		UIDock* dock = new UIDock(id, onlyUI);		
 		dock->setWindowTitle(id);
 		dock->setAllowedAreas(Qt::RightDockWidgetArea);
 		dock->setFeatures(QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
@@ -116,6 +118,10 @@ void GeneralGui::addPlugin(QString id)
 		ui.menuPlugins->addAction(dock->getAction());
 		connect(dock,SIGNAL(dockStatusChanged(QString,bool)),this,SLOT(pluginDockChanged(QString,bool)));
 		connect(dock, SIGNAL(quit(QString)),this,SLOT(quitPlugin(QString)));
+	}
+	else
+	{
+		pluginDockMap[id]->setIsOnlyUI(false);
 	}
 }
 void GeneralGui::removePlugin(QString id)
@@ -166,7 +172,7 @@ void GeneralGui::saveConfigAs()
 }
 void GeneralGui::addPluginUI(QString id, QString title, QWidget* ui)
 {
-	if(pluginDockMap.count(id) == 0) addPlugin(id);
+	if(pluginDockMap.count(id) == 0) addPlugin(id,true);
 	
 	if(ui)
 	{
@@ -180,8 +186,10 @@ void GeneralGui::removePluginUI(QString id, QString title, QWidget* ui)
 {
 	if(pluginDockMap.count(id) > 0)
 	{
-		pluginDockMap[id]->removeUITab(ui);
+		UIDock* dock = pluginDockMap[id];
+		dock->removeUITab(ui);
 		ui->setParent(0);//let nerve take care of deleting the ui instead qt
+		if(dock->getIsOnlyUI() && dock->getNumUIs()==0) removePlugin(id);
 	}
 }
 void GeneralGui::quitPlugin(QString id)

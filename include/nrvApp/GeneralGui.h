@@ -81,6 +81,8 @@ private:
 class GeneralGui : public QMainWindow
 {
 	Q_OBJECT
+public:
+	typedef std::pair<std::string,bool> PluginPathInfo;
 private:
 signals:
 	void pluginAvailableSignal(const QString&);
@@ -90,14 +92,16 @@ signals:
 	void uiAvailableSignalBlocking(const QString&,const QString&,QWidget*);
 	void uiRemovedSignalBlocking(const QString&,const QString&,QWidget*);
 public:
-	GeneralGui(NerveApplication* napp, QWidget * parent = 0);	
+	GeneralGui(NerveApplication* napp, QWidget * parent = 0);
+	~GeneralGui(){printf("GeneralGui dtor\n");}
+	PluginPathInfo getPluginPathInfo();
 	void pluginAvailable(std::string id){ emit pluginAvailableSignal(id.c_str()); }
 	void pluginUnavailable(std::string id){	emit pluginRemovedSignal(id.c_str()); }
 	void uiAvailable(UIInfo info);
 	void uiRemoved(UIInfo info);
 	void init();
 private slots:
-	void addPlugin(QString id);
+	void addPlugin(QString id, bool b=false);
 	void removePlugin(QString id);
 	void addPluginUI(QString id, QString title, QWidget* ui);
 	void removePluginUI(QString id, QString title, QWidget* ui);
@@ -144,7 +148,7 @@ class UIDock : public QDockWidget
 {
 	Q_OBJECT
 public:
-	UIDock(QString id):myID(id),floatingStatus(false)
+	UIDock(QString id, bool onlyUI):myID(id),floatingStatus(false),isOnlyUI(onlyUI)
 	{
 		tabWidget = new QTabWidget(this);
 		myAction = new QAction(id,this);
@@ -164,6 +168,8 @@ public:
 
 		QAction* quitAction = new QAction(QString("Quit"),this);
 		connect(quitAction,SIGNAL(triggered()),this,SLOT(requestQuit()));
+		connect(this,SIGNAL(uiOnly(bool)),quitAction,SLOT(setEnabled(bool)));
+		quitAction->setEnabled(!isOnlyUI);//disable the quit function if the application isn't the owner
 
 		myAction->menu()->addAction(showAction);
 		myAction->menu()->addAction(floatAction);
@@ -212,6 +218,20 @@ public:
 	{
 		 myContextMenu->popup(evnt->globalPos());
 	}
+	bool getIsOnlyUI(){return isOnlyUI;}
+	void setIsOnlyUI(bool b)
+	{
+		if(b==isOnlyUI) return;
+		isOnlyUI=b;
+		emit uiOnly(!isOnlyUI);
+		/*QList<QAction*> actionList = myAction->menu()->actions();
+		for(int i=0;i<actionList.size();++i)
+		{
+			if(actionList.at(i)->text()=="Quit")
+				actionList.at(i)->setEnabled(!isOnlyUI);
+		}*/
+	}
+	int getNumUIs(){return tabWidget->count();}
 public slots:
 	void dockFloatingChanged(bool floating){floatingStatus = floating;emit dockStatusChanged(myID,floating);}
 	void showDock(bool b){setVisible(b);}
@@ -221,11 +241,12 @@ signals:
 	void dockStatusChanged(QString id, bool floating);
 	void dockShowStatusChanged(bool b);
 	void quit(QString id);
-	
+	void uiOnly(bool b);
 protected:
 	QTabWidget* tabWidget;
 	QAction* myAction;
 	QMenu* myContextMenu;
 	QString myID;
 	bool floatingStatus;
+	bool isOnlyUI;
 };

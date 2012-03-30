@@ -3,12 +3,11 @@
 #include <iostream>
 #include "nrvApp/GeneralGui.h"
 #include <QtCore/QObject>
-
 class QDialog;
 
 void PluginCreator::operator ()()
 {
-	h = new PluginHandler(a,f);
+	//h->setupAndRun();
 }
 NerveApplication::NerveApplication():qAppExec(0)
 {
@@ -18,6 +17,12 @@ NerveApplication::NerveApplication():qAppExec(0)
 	app = new QApplication(ac, av);
 	gui = new GeneralGui(this);
 
+}
+std::vector<std::string> NerveApplication::refreshPlugins()
+{
+	GeneralGui::PluginPathInfo p = gui->getPluginPathInfo();
+	pluginRegistry.discoverPlugins(p.first,p.second);
+	return getAvailableFactoryIDs();
 }
 bool NerveApplication::isQObjectInQApplicationThread(QObject* o)
 {
@@ -38,17 +43,18 @@ void NerveApplication::launch()
 	windowpos.Left = 100;
 	SetConsoleWindowInfo(window, false, &windowpos);*/
 
-	pluginRegistry.discoverPlugins();
+	refreshPlugins();
 	gui->refreshPluginList();
 	gui->init();
 	gui->move(300,50);
 	gui->setVisible(true);
 
-
+	qtimer.start();
 	//control stops at app->exe() until QApplication returns
 	app->exec();
 	Sleep(10);
 	pluginManager.clearAllPlugins();
+	delete gui;
 	delete app;
 	std::cout<<"Exiting NERVEApplication\n";
 	system("pause");
