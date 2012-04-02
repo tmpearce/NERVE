@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(PLUGIN_FILENAME windowuser)
+set(PLUGIN_FILENAME centerout_example)
 
 PROJECT(${PLUGIN_FILENAME})
 

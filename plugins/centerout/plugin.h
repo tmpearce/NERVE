@@ -31,7 +31,7 @@ private:
 	float s;
 };
 
-class TutorialPlugin : public NervePluginBase
+class CenterOutPlugin : public NervePluginBase
 {
 public:
 	enum CallbackID
@@ -47,7 +47,7 @@ public:
 
 		createWindow();
 	}
-	~TutorialPlugin()
+	~CenterOutPlugin()
 	{
 		posThread.cancel();
 		if(iWindow)
@@ -96,14 +96,14 @@ public:
 private:
 	NerveThread posThread;
 	NerveAPI* mpAPI;
-	TutorialGui* gui;
+	CenterOutGui* gui;
 	IOSGWindow* iWindow;
 	std::string window_plugin;
 	CenterOut cenOut;
 
 	void createGui()
 	{
-		gui=new TutorialGui(this);
+		gui=new CenterOutGui(this);
 		mpAPI->exposeUI(gui);
 		mpAPI->setTakeOwnershipOfCreatedPlugins(true);
 		mpAPI->setWillAcceptChildUIs(true);
