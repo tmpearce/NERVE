@@ -98,7 +98,7 @@ private:
 	osg::ref_ptr<osg::Group> sceneData;
 	osg::ref_ptr<osg::DisplaySettings> displaySettings;
 	osg::ref_ptr<osg::NodeCallback> cameraCallback;
-	osg::ref_ptr<osgGA::MatrixManipulator> customCameraManipulator;
+	osg::ref_ptr<osgGA::CameraManipulator> customCameraManipulator;
 	osg::ref_ptr<osg::MatrixTransform> mirror;
 	osg::ref_ptr<osg::Group> nomirror;
 	osg::Timer timer;
