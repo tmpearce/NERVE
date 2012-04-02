@@ -18,7 +18,7 @@
 #include <osg/Camera>
 #include <osg/DisplaySettings>
 #include <osgGA/TrackballManipulator>
-#include <osgGA/FirstPersonManipulator>
+#include <osgGA/FlightManipulator>
 #include <osgGA/GUIEventHandler>
 #include <osgDB/ReadFile>
 //#include "C:/osgBullet/include/osgbInteraction/HandNode.h"
@@ -97,7 +97,7 @@ private:
 	osg::ref_ptr<osg::Group> sceneData;
 	osg::ref_ptr<osg::DisplaySettings> displaySettings;
 	osg::ref_ptr<osg::NodeCallback> cameraCallback;
-	osg::ref_ptr<osgGA::CameraManipulator> customCameraManipulator;
+	osg::ref_ptr<osgGA::MatrixManipulator> customCameraManipulator;
 	osg::ref_ptr<osg::MatrixTransform> mirror;
 	osg::ref_ptr<osg::Group> nomirror;
 	osg::Timer timer;
@@ -173,7 +173,7 @@ public:
 			case 0: vmod->viewer.setCameraManipulator(0); vmod->viewer.getCamera()->setUpdateCallback(vmod->cameraCallback); break;
 			case 1: vmod->viewer.getCamera()->setUpdateCallback(0); vmod->viewer.setCameraManipulator(vmod->customCameraManipulator); break;
 			case 2: vmod->viewer.getCamera()->setUpdateCallback(0); vmod->viewer.setCameraManipulator(new osgGA::TrackballManipulator()); break;
-			case 3: vmod->viewer.getCamera()->setUpdateCallback(0); vmod->viewer.setCameraManipulator(new osgGA::FirstPersonManipulator()); break;
+			case 3: vmod->viewer.getCamera()->setUpdateCallback(0); vmod->viewer.setCameraManipulator(new osgGA::FlightManipulator()); break;
 			}
 		}
 		pause->unpause();
