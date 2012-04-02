@@ -86,8 +86,15 @@ std::vector<std::wstring>GetPathDirectories()
 		{
 			QString dir = pathcomponents.at(i);
 			dir.replace("/","\\");
-			//wprintf(L"%s\n",dir.toStdWString().c_str());
-			dirs.push_back(dir.toStdWString());
+			if(dir.isEmpty())
+			{
+				//wprintf(L"Found empty directory %s\n",dir.toStdWString().c_str());
+			}
+			else
+			{
+				//wprintf(L"Found nonempty directory %s\n",dir.toStdWString().c_str());
+				dirs.push_back(dir.toStdWString());
+			}
 		}
 	}
 	return dirs;
@@ -174,7 +181,7 @@ void PluginRegistry::accept(NervePluginFactory * factory)
 void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 {
 	clearUnloadedPluginsFromInfoList();
-	
+	printf("Directory: (%s)\n",directory.c_str());
 	//Restore the default dll search order
 	SetDllDirectory(0);
 	//Add plugin path directories to the dll search path
@@ -183,17 +190,29 @@ void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 		std::vector<std::wstring> dlluserpath;
 		if(useSubDirs)
 		{
+			printf("finding directories\n");
 			 dlluserpath = FindDirectories(QString::fromStdString(directory).toStdWString());
 		}
 		else
 		{
+			printf("not finding directories\n");
 			dlluserpath.push_back(QString::fromStdString(directory).toStdWString());
 		}
 		std::vector<std::wstring> pathdirs =  GetPathDirectories();
 		dlluserpath.insert(dlluserpath.end(), pathdirs.begin(), pathdirs.end());
+		printf("%i folders in dlluserpath\n",dlluserpath.size());
 		for(std::vector<std::wstring>::iterator it = dlluserpath.begin();it!=dlluserpath.end();++it)
-		{
-			if(AddDllDirectory((*it).c_str())==0) wprintf(L"Problem adding (%s) to dll search path\n",it->c_str());
+		{ //++it;
+			wprintf(L"Adding %s to path\n",it->c_str());
+			if(!it->empty())
+			{wprintf(L"Adding %s to path\n",it->c_str());
+			void* pointer = (void*)&AddDllDirectory;
+			if(AddDllDirectory(L"C:\\Users")==0) printf("Didn't add C:\\Users");
+			else printf("Did add C:\\Users");
+			printf("pointer: %p\n",pointer);
+			//AddDllDirectory(it->c_str());
+				//if(AddDllDirectory((*it).c_str())==0) wprintf(L"Problem adding (%s) to dll search path\n",it->c_str());
+			}
 						
 		}
 		//For the future: this might be a good place to specify dll search options, rather than in LoadLibraryEx
