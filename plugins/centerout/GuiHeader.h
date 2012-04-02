@@ -1,17 +1,17 @@
 #pragma once
-#include "ui_windowuser.h"
+#include "ui_centerout_example.h"
 #include <QIntValidator>
 #include <QString>
 #include <QTabWidget>
 #include <QLayout>
 
-class TutorialPlugin;
+class CenterOutPlugin;
 
-class TutorialGui : public QDialog
+class CenterOutGui : public QDialog
 {
 	Q_OBJECT//this macro flags the class for the moc tool
 public:
-	TutorialGui(TutorialPlugin* p):plugin(p)
+	CenterOutGui(CenterOutPlugin* p):plugin(p)
 	{
 		ui.setupUi(this);
 	}
@@ -23,6 +23,6 @@ public:
 public slots:
 	void on_startButton_clicked();
 protected:
-	TutorialPlugin* plugin;
+	CenterOutPlugin* plugin;
 	Ui::TutorialDialog ui;
 };
