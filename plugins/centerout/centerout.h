@@ -3,6 +3,8 @@
 #include "nrvThread/NerveModule.h"
 #include "nrvToolbox/TriBuf.h"
 #include "SceneElements.h"
+#include <osg/Timer>
+#include "math.h"
 
 class CenterOut;
 class LogicModule : public NerveModule
@@ -70,6 +72,8 @@ public:
 		logicModule->setOperateAction(NerveModule::DONT_REMOVE_MODULE);
 		logicModule->setRemoveAction(NerveModule::DELETE_MODULE);
 		logicThread.addModule(*logicModule);
+
+		srand(time(0));
 	}
 	~CenterOut(){logicThread.cancel(); while(logicThread.isRunning()) OpenThreads::Thread::microSleep(1);}
 	osg::ref_ptr<osg::Group> getScene(){return scene->getNodePtr();}
@@ -135,6 +139,7 @@ private:
 			co->target->setEnabled(false);
 			co->cursor->setEnabled(true);
 			co->center->setColor(1.,0.,0.);
+			co->newTrial();
 		}
 		void check()
 		{
@@ -244,5 +249,15 @@ private:
 	{
 		CenterOut::CursorPosition p(cpBuffer.getData());
 		cursor->setTranslation(p.x,p.y,p.z);
+	}
+	void newTrial()
+	{
+		int t = rand()%8;
+		double angle = 3.14159/4 * t;
+		double x = 10.0 * cos(angle);
+		double y = 0.;
+		double z = 10.0 * sin(angle);
+		target->setTranslation(x,y,z);
+
 	}
 };
