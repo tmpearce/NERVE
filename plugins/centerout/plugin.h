@@ -86,6 +86,8 @@ public:
 		iWindow->setScene(cenOut.getScene());
 		iWindow->setCameraCallback(cenOut.getCameraCallback());
 		iWindow->initWindowEvents();
+		iWindow->setupInWindow();
+		iWindow->applyChanges();
 
 		PositionModule* m = new PositionModule(&cenOut, iWindow, 20.f);
 		m->setOperateAction(NerveModule::DONT_REMOVE_MODULE);

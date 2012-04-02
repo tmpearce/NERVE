@@ -47,6 +47,7 @@ struct WindowParams{
 	int screenNum;
 	float frameRate;
 	int camManipOption;
+	WindowParams():windowed(true),mirrored(false),stereo(false),screenNum(0),frameRate(0),camManipOption(0){}
 };
 
 class ViewerModule : public NerveModule{
@@ -97,7 +98,7 @@ private:
 	osg::ref_ptr<osg::Group> sceneData;
 	osg::ref_ptr<osg::DisplaySettings> displaySettings;
 	osg::ref_ptr<osg::NodeCallback> cameraCallback;
-	osg::ref_ptr<osgGA::CameraManipulator> customCameraManipulator;
+	osg::ref_ptr<osgGA::MatrixManipulator> customCameraManipulator;
 	osg::ref_ptr<osg::MatrixTransform> mirror;
 	osg::ref_ptr<osg::Group> nomirror;
 	osg::Timer timer;
@@ -139,6 +140,14 @@ class ViewerParamModule : public NerveModule
 public:
 	void moduleOperation(NerveModuleUser*)
 	{
+		if(vmod->viewer.isRealized()==false)
+		{
+			bframeRate = true;
+			bmirror = true;
+			bstereo=true;
+			bsetup=true;
+			bmanip=true;
+		}
 		if(bframeRate)vmod->frameRate = frameRate;
 		if(bmirror)
 		{
@@ -303,7 +312,7 @@ private:
 class Window
 {
 public:
-	Window():sceneRoot(0),camCallback(0),windowEvents(0)
+	Window():initialized(false),sceneRoot(0),camCallback(0),windowEvents(0)
 	{
 		vm = new ViewerModule();
 		vm->setOperateAction(NerveModule::DONT_REMOVE_MODULE);
@@ -338,12 +347,23 @@ public:
 	{
 		Lock the(mutex);
 		ViewerUpdater update(*vm);
-		if(wp.windowed != params.windowed || wp.screenNum != params.screenNum) update.setWindowed(wp.windowed,wp.screenNum);
-		if(wp.mirrored != params.mirrored) update.setMirrored(wp.mirrored);
-		if(wp.frameRate != params.frameRate) update.setFrameRate(wp.frameRate);
-		if(wp.stereo != params.stereo) update.setStereo(wp.stereo);
-		if(wp.camManipOption != params.camManipOption) update.setCamManipulation(wp.camManipOption);
-
+		if(initialized)
+		{
+			if(wp.windowed != params.windowed || wp.screenNum != params.screenNum) update.setWindowed(wp.windowed,wp.screenNum);
+			if(wp.mirrored != params.mirrored) update.setMirrored(wp.mirrored);
+			if(wp.frameRate != params.frameRate) update.setFrameRate(wp.frameRate);
+			if(wp.stereo != params.stereo) update.setStereo(wp.stereo);
+			if(wp.camManipOption != params.camManipOption) update.setCamManipulation(wp.camManipOption);
+		}
+		else
+		{
+			initialized = true;
+			update.setWindowed(wp.windowed,wp.screenNum);
+			update.setMirrored(wp.mirrored);
+			update.setFrameRate(wp.frameRate);
+			update.setStereo(wp.stereo);
+			update.setCamManipulation(wp.camManipOption);
+		}
 		update.updateParams(vt);
 		params = wp;
 	}
@@ -361,4 +381,5 @@ private:
 	osg::ref_ptr<osg::Group> sceneRoot;
 	osg::ref_ptr<osg::NodeCallback> camCallback;
 	OpenThreads::Mutex mutex;
+	bool initialized;
 };

@@ -3,6 +3,7 @@
 #include "nrvThread/NerveModule.h"
 #include "nrvToolbox/TriBuf.h"
 #include "SceneElements.h"
+#include <osg/timer>
 
 class CenterOut;
 class LogicModule : public NerveModule
