@@ -1,7 +1,8 @@
 #pragma once
 #include "nrvApp/NerveAPI.h"
 #include "nrvApp/NervePluginBase.h"
-#include "osgwindow_interface.h"
+#include "osgwindow/osgwindow_interface.h"
+#include "FileWriter/IFileWriter.h"
 #include "nrvThread/NerveThread.h"
 #include "nrvThread/NerveModule.h"
 
@@ -46,15 +47,24 @@ public:
 		posThread.start();
 
 		createWindow();
+		createOutputFile();
 	}
 	~CenterOutPlugin()
 	{
 		posThread.cancel();
+		//clean up child plugins
+		//first the osg window
 		if(iWindow)
 		{
 			mpAPI->unbindIPlugin(iWindow);
 		}
 		mpAPI->cancelChildPlugin(window_plugin);
+		//clean up the file writer child plugin
+		if(iFile)
+		{
+			mpAPI->unbindIPlugin(iFile);
+		}
+		mpAPI->cancelChildPlugin(file_plugin);
 		mpAPI->callPluginFromMainThread(this,DESTROY_GUI,NerveAPI::CALLBACK_REQUESTS_BLOCKING);
 	}
 	void callbackFromMainApplicationThread(int call_id)
@@ -75,14 +85,14 @@ public:
 		window_plugin = mpAPI->createPlugin("OSG Window <osgwindow.dll>");
 		IPlugin* ip = mpAPI->bindIPlugin(window_plugin);
 		iWindow = dynamic_cast<IOSGWindow*>(ip);
-		if(iWindow)
+		/*if(iWindow)
 		{
 			printf("successfully cast IPlugin* to IOSGWindow*\n");
 		}
 		else
 		{
 			printf("failed to cast IPlugin* to IOSGWindow*\n");
-		}
+		}*/
 		iWindow->setScene(cenOut.getScene());
 		iWindow->setCameraCallback(cenOut.getCameraCallback());
 		iWindow->initWindowEvents();
@@ -94,6 +104,24 @@ public:
 		m->setRemoveAction(NerveModule::DELETE_MODULE);
 		posThread.addModule(*m);
 	}
+	void createOutputFile()
+	{
+		file_plugin = mpAPI->createPlugin("FileWriter <FileWriter.dll>");
+		IPlugin* ip = mpAPI->bindIPlugin(file_plugin);
+		iFile = dynamic_cast<IFileWriter*>(ip);
+		/*if(iFile)
+		{
+			printf("successfully cast IPlugin* to IFileWriter*\n");
+		}
+		else
+		{
+			printf("failed to cast IPlugin* to IFileWriter*\n");
+		}*/
+		iFile->openFile("centerout_data.txt");
+		FileStream* fs = iFile->createFileStream();
+		fs->filestr()<<"Testing FileStream"<<std::endl<<3.14159<<std::endl<<this;
+		fs->flush();
+	}
 	void startTask(){cenOut.start();}
 private:
 	NerveThread posThread;
@@ -101,6 +129,8 @@ private:
 	CenterOutGui* gui;
 	IOSGWindow* iWindow;
 	std::string window_plugin;
+	IFileWriter* iFile;
+	std::string file_plugin;
 	CenterOut cenOut;
 
 	void createGui()

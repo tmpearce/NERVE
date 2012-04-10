@@ -193,7 +193,10 @@ void PluginRegistry::discoverPlugins(std::string directory, bool useSubDirs)
 		dlluserpath.insert(dlluserpath.end(), pathdirs.begin(), pathdirs.end());
 		for(std::vector<std::wstring>::iterator it = dlluserpath.begin();it!=dlluserpath.end();++it)
 		{//wprintf(L"Adding %s to search path...\n",it->c_str());
-			if(AddDllDirectory((*it).c_str())==0) wprintf(L"Problem adding (%s) to dll search path\n",it->c_str());
+			if(AddDllDirectory((*it).c_str())==0) 
+			{
+				//wprintf(L"Problem adding (%s) to dll search path\n",it->c_str());
+			}
 						
 		}
 		//For the future: this might be a good place to specify dll search options, rather than in LoadLibraryEx

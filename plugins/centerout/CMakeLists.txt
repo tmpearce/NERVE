@@ -25,7 +25,7 @@ set(FILES_TO_MOC
 
 link_directories($ENV{NERVE_LIB_DIR})
 include_directories(../../include)
-include_directories(../osgwindow)
+include_directories(../)
 
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
@@ -38,4 +38,8 @@ find_package(OpenSceneGraph 2.8.2 REQUIRED osg)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 add_library(${PLUGIN_FILENAME} SHARED ${SRCFILES} ${HDRFILES})
-target_link_libraries(${PLUGIN_FILENAME} NerveApp ${QT_LIBRARIES} ${OPENSCENEGRAPH_LIBRARIES} ../../../NerveProjects/plugins/osgwindow/release/osgwindow)
+target_link_libraries(${PLUGIN_FILENAME} NerveApp ${QT_LIBRARIES} 
+						${OPENSCENEGRAPH_LIBRARIES} 
+						../../../NerveProjects/plugins/osgwindow/release/osgwindow
+						../../../NerveProjects/plugins/FileWriter/release/FileWriter
+						)
