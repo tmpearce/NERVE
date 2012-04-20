@@ -1,23 +1,16 @@
-#pragma once
+#include "IOptotrak.h"
+#include "OptotrakWrapper.h"
+#include <OpenThreads/Thread>
 #include "ndtypes.h"
 #include "ndpack.h"
 #include "ndopto.h"
-#include <string>
-#include <windows.h>
 
-#define BUFFER_SIZE 60000
 #define NUM_MARKERS 1
-class OptotrakModule
+class IOptotrak_private
 {
 public:
-	OptotrakModule():paramsSet(false),dataFileOpen(false),mp_DataFile(0){}
-	bool initOptotrak()
+	bool initOptotrak(const OptotrakParams& p)
 	{
-		if(!paramsSet)
-		{
-			printf("Failed in OptotrakModule::initOptotrak - parameters not set when init called\n");
-			return false;
-		}
 		int nNumSensors, nNumOdaus, nMarkers;
 		char szNDErrorString[MAX_ERROR_STRING_LENGTH + 1];
 
@@ -31,13 +24,13 @@ public:
 			printf("Failed in OptotrakModule::initOptotrak - TransputerLoadSystem\n");
 			return false;
 		}
-		Sleep(1000); //wait one second for the system to load
+		OpenThreads::Thread::microSleep(500000); //wait half a second for the system to load
 		if(TransputerInitializeSystem(OPTO_LOG_ERRORS_FLAG))
 		{
 			printf("Failed in OptotrakModule::initOptotrak - TransputerInitialize\n");
 			return false;
 		}
-		if(OptotrakLoadCameraParameters(const_cast<char*>( m_cameraParamFile.c_str() )))
+		if(OptotrakLoadCameraParameters(const_cast<char*>( p.cameraParamFile.c_str() )))
 		{
 			printf("Failed in OptotrakModule::initOptotrak - OptotrakLoadCameraParameters\n");
 			return false;
@@ -81,7 +74,7 @@ public:
 			return false;
 		}
 				
-		Sleep(1000);
+		OpenThreads::Thread::microSleep(500000);
 		
 		if(OptotrakActivateMarkers())
 		{
@@ -90,70 +83,7 @@ public:
 		}
 		return true;
 	}
-	void setOptotrakParameters( float fFrameFrequency,
-								float fMarkerFrequency,
-								int nThreshold,
-								int nMinimumGain,
-								int nStreamData,
-								float fDutyCycle,
-								float fVoltage,
-								float fCollectionTime,
-								float fPreTriggerTime,
-								int nFlags,
-								std::string cameraParamFile)
-	{
-		m_nMarkers=NUM_MARKERS;
-		m_fFrameFrequency=fFrameFrequency;
-		m_fMarkerFrequency=fMarkerFrequency;
-		m_nThreshold=nThreshold;
-		m_nMinimumGain=nMinimumGain;
-		m_nStreamData=nStreamData;
-		m_fDutyCycle=fDutyCycle;
-		m_fCollectionTime=fCollectionTime;
-		m_fPreTriggerTime=fPreTriggerTime;
-		m_nFlags=nFlags;
-		m_cameraParamFile=cameraParamFile;
-
-		if(fCollectionTime > (m_fFrameFrequency*m_nMarkers*3))
-		{
-			printf("WARNING: collection time, frame rate and number "
-				   "of markers make buffer overruns possible");
-		}
-		
-		paramsSet = true;
-	}
-	bool setFile(std::string file_with_path)
-	{
-		m_datafile=file_with_path;
-		mp_DataFile = fopen(m_datafile.c_str(),"a");
-		if(mp_DataFile==0)
-		{
-			printf("Error in OptotrakModule::setFile - file '%s' not opened\n",m_datafile.c_str());
-			return false;
-		}
-		dataFileOpen=true;
-		return true;
-	}
-private:
-	float m_opto_buffer[BUFFER_SIZE];
-	std::string m_cameraParamFile;
-	std::string m_datafile;
-	
-	bool paramsSet;
-	bool dataFileOpen;
-
-	FILE* mp_DataFile;
-
-	int m_nMarkers;
-	float m_fFrameFrequency;
-	float m_fMarkerFrequency;
-	int m_nThreshold;
-	int m_nMinimumGain;
-	int m_nStreamData;
-	float m_fDutyCycle;
-	float m_fVoltage;
-	float m_fCollectionTime;
-	float m_fPreTriggerTime;
-	int m_nFlags;
-	
 };
+IOptotrak::IOptotrak(){d_=new IOptotrak_private();}
+IOptotrak::~IOptotrak(){delete d_;}
+void IOptotrak::initOptotrak(const OptotrakParams &p){d_->initOptotrak(p);}

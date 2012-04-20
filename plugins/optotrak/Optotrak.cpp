@@ -6,10 +6,11 @@
 
 //files from this project
 #include "GuiHeader.h"
-#include "OptotrakModule.h"
-M_MAKE_PLUGIN(TutorialPluginFactory)
+#include "OptotrakWrapper.h"
+#include "IOptotrak.h"
+M_MAKE_PLUGIN(OptotrakFactory)
 
-class TutorialPlugin : public NervePluginBase
+class OptotrakPlugin : public NervePluginBase
 {
 public:
 	enum CallbackID
@@ -21,8 +22,10 @@ public:
 	{
 		mpAPI = n;
 		mpAPI->callPluginFromMainThread(this,CREATE_GUI, NerveAPI::CALLBACK_REQUESTS_BLOCKING);
+		iOptotrak = new IOptotrak();
+		mpAPI->exposeIPlugin(iOptotrak);
 	}
-	~TutorialPlugin()
+	~OptotrakPlugin()
 	{
 		mpAPI->callPluginFromMainThread(this,DESTROY_GUI,NerveAPI::CALLBACK_REQUESTS_BLOCKING);
 	}
@@ -37,7 +40,8 @@ public:
 private:
 	NerveAPI* mpAPI;
 	OptotrakGui* gui;
-	OptotrakModule optotrakModule;
+	IOptotrak* iOptotrak;
+	//OptotrakWrapper optotrakWrapper;
 	void createGui()
 	{
 		gui=new OptotrakGui();
@@ -50,17 +54,17 @@ private:
 	}
 };
 
-void TutorialPluginFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * n)
+void OptotrakFactory::cleanUpPluginObject(NervePluginBase * p, NerveAPI * n)
 {
 	delete p;
 }
-NervePluginBase* TutorialPluginFactory::createPluginObject()
+NervePluginBase* OptotrakFactory::createPluginObject()
 {
-	return new TutorialPlugin();
+	return new OptotrakPlugin();
 }
 
 
-const char* TutorialPluginFactory::getName()
+const char* OptotrakFactory::getName()
 {
 	return "Optotrak Interface";
 }

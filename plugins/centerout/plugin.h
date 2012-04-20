@@ -6,6 +6,8 @@
 #include "nrvThread/NerveThread.h"
 #include "nrvThread/NerveModule.h"
 
+#include <iomanip>
+
 //files from this project
 #include "plugin.h"
 #include "GuiHeader.h"
@@ -14,8 +16,9 @@
 
 class PositionModule : public NerveModule
 {
+	class BufferGetter : public NerveModule
 public:
-	PositionModule(CenterOut* cenout, IOSGWindow* window, float scale):co(cenout),w(window),s(scale){}
+	PositionModule(CenterOut* cenout, IOSGWindow* window, float scale):co(cenout),w(window),s(scale),writeIndex(-1),bufferData(false),bufferRate(0.f){}
 	void moduleOperation(NerveModuleUser*)
 	{
 		CenterOut::CursorPosition pos;
@@ -24,8 +27,9 @@ public:
 		pos.y = 0.f;
 		pos.z = mpos.second * s;
 		co->setCursorPosition(pos);
-		OpenThreads::Thread::microSleep(1000);
+		OpenThreads::Thread::microSleep(100);
 	}
+	
 private:
 	CenterOut* co;
 	IOSGWindow* w;
@@ -119,7 +123,13 @@ public:
 		}*/
 		iFile->openFile("centerout_data.txt");
 		FileStream* fs = iFile->createFileStream();
-		fs->filestr()<<"Testing FileStream"<<std::endl<<3.14159<<std::endl<<this;
+		float buffer[5];
+		for(int i=0;i<5;++i)
+		{
+			buffer[i] = (float)rand()/64000;
+		}
+		fs->filestr()<<"Testing FileStream"<<std::endl<<3.141590000<<std::endl<<std::setprecision(2)<<std::fixed;
+		for(int i=0;i<5;++i) fs->filestr()<<buffer[i]<<" ";
 		fs->flush();
 	}
 	void startTask(){cenOut.start();}
